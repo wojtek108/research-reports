@@ -238,13 +238,10 @@
         const sections = ['bio', 'proto', 'move', 'chem', 'emo'];
         let charts = {};
 
-        // Ustawianie dzisiejszej daty
+        // Statyczna data opracowania raportu
         function setDates() {
-            const now = new Date();
-            const options = { year: 'numeric', month: 'long', day: 'numeric' };
-            const formattedDate = now.toLocaleDateString('pl-PL', options);
-            document.getElementById('current-date-header').innerText = formattedDate;
-            document.getElementById('current-date-footer').innerText = formattedDate;
+            document.getElementById('current-date-header').innerText = '4 sierpnia 2026';
+            document.getElementById('current-date-footer').innerText = '4 sierpnia 2026';
         }
 
         function showSection(id) {
