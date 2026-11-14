@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Magnesium Deep Research Explorer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        
+        :root {
+            --bg-warm: #fdfbf7;
+            --primary: #4a5d4e;
+            --secondary: #7c9082;
+            --accent: #d4a373;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-warm);
+            color: #2d3436;
+            scroll-behavior: smooth;
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 400px;
+            max-height: 450px;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            transition: transform 0.2s ease;
+        }
+
+        .expert-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: var(--secondary);
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+<a href="index.html" style="position:fixed;top:14px;left:14px;z-index:9999;font:600 0.85rem/1 -apple-system,BlinkMacSystemFont,sans-serif;color:#2F6B4F;background:#fff;border:1px solid #E3E6E0;border-radius:999px;padding:8px 14px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.08);">← Index</a>
+
+    <!-- Chosen Palette: Warm Earth & Sage (Podstawa: Ciepły kremowy #fdfbf7, Akcenty: Szałwiowa zieleń i ochra) -->
+    
+    <!-- Application Structure Plan: 
+        1. Navigation: Intuicyjne menu do sekcji raportu.
+        2. Hero: Kluczowe statystyki (600+ enzymów, 50% populacji z niedoborem).
+        3. Form Matrix Explorer: Interaktywna macierz pozwalająca porównać formy Mg (wykres + detale).
+        4. Experts Hub: Przegląd protokołów Hubermana, Attii i Patrick w formie kart.
+        5. Biohack Intelligence: Sekcja Reddit (ryzyka onkologiczne i hormonalne).
+        6. Polish Sourcing Database: Filtrowana tabela dostawców (CZDA vs Suplementy).
+        Wybrano taką strukturę, aby użytkownik mógł przejść od teorii biochemicznej do praktycznych zaleceń i konkretnych produktów.
+    -->
+
+    <!-- Visualization & Content Choices: 
+        - Bar Chart (Chart.js): Porównanie zawartości jonowej vs biodostępności różnych soli.
+        - Expert Panels: Interaktywne przełączanie między protokołami.
+        - Interactive Table: Filtracja rynkowa dla ułatwienia zakupów w PL.
+        - NO SVG/Mermaid: Zastosowano Canvas dla wykresów oraz HTML/CSS dla ikon i diagramów.
+    -->
+
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+            <span class="font-bold text-xl tracking-tight text-[#4a5d4e]">Mg<span class="font-light">Research</span></span>
+            <div class="hidden md:flex space-x-8 text-sm font-medium text-gray-600">
+                <a href="#matrix" class="hover:text-[#d4a373]">Formy Magnezu</a>
+                <a href="#experts" class="hover:text-[#d4a373]">Eksperci</a>
+                <a href="#risks" class="hover:text-[#d4a373]">Ryzyka</a>
+                <a href="#market" class="hover:text-[#d4a373]">Rynek PL</a>
+            </div>
+        </div>
+    </nav>
+
+    <header class="pt-32 pb-20 px-6 max-w-7xl mx-auto">
+        <div class="text-center">
+            <h1 class="text-5xl md:text-7xl font-bold text-[#2c3e50] mb-6 tracking-tight">Potęga <span class="text-[#4a5d4e]">Magnezu</span></h1>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                Analiza farmakokinetyki i biodostępności. Dowiedz się, dlaczego standardowe badania krwi kłamią i którą formę wybrać, by realnie wspierać mózg, serce i regenerację.
+            </p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16">
+            <div class="p-8 rounded-3xl glass-card text-center">
+                <div class="text-4xl font-bold text-[#4a5d4e] mb-2">600+</div>
+                <p class="text-sm uppercase tracking-widest font-semibold text-gray-400">Reakcji enzymatycznych</p>
+            </div>
+            <div class="p-8 rounded-3xl glass-card text-center">
+                <div class="text-4xl font-bold text-[#4a5d4e] mb-2">50%</div>
+                <p class="text-sm uppercase tracking-widest font-semibold text-gray-400">Populacji ma niedobory</p>
+            </div>
+            <div class="p-8 rounded-3xl glass-card text-center">
+                <div class="text-4xl font-bold text-[#4a5d4e] mb-2">1%</div>
+                <p class="text-sm uppercase tracking-widest font-semibold text-gray-400">Mg znajduje się we krwi</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Section 1: Form Matrix -->
+    <section id="matrix" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="mb-12">
+                <h2 class="text-3xl font-bold text-[#2c3e50]">Interaktywna Macierz Form Magnezu</h2>
+                <p class="mt-4 text-gray-600 max-w-2xl">
+                    Każda forma magnezu ma inny cel. Poniższy wykres porównuje zawartość elementarnego magnezu z jego teoretyczną biodostępnością. Wybierz formę z listy, aby zobaczyć szczegóły.
+                </p>
+            </div>
+
+            <div class="grid lg:grid-cols-5 gap-12 items-center">
+                <div class="lg:col-span-3">
+                    <div class="chart-container bg-[#fdfbf7] p-4 rounded-3xl border border-gray-100">
+                        <canvas id="mgChart"></canvas>
+                    </div>
+                </div>
+                <div class="lg:col-span-2 space-y-4">
+                    <div id="formDetails" class="p-8 rounded-[2rem] bg-[#4a5d4e] text-white shadow-2xl">
+                        <h3 id="detailTitle" class="text-2xl font-bold mb-2">Wybierz formę...</h3>
+                        <p id="detailDesc" class="text-emerald-100/80 mb-6">Kliknij na słupek lub listę poniżej, aby poznać zastosowanie.</p>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="bg-white/10 p-3 rounded-xl text-center">
+                                <span class="block text-xs uppercase text-emerald-200">Zawartość Mg</span>
+                                <span id="detailMg" class="text-xl font-bold">-</span>
+                            </div>
+                            <div class="bg-white/10 p-3 rounded-xl text-center">
+                                <span class="block text-xs uppercase text-emerald-200">Biodostępność</span>
+                                <span id="detailBio" class="text-xl font-bold">-</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="updateDetails('Tlenek')" class="px-4 py-2 rounded-full border border-gray-200 hover:bg-gray-50 text-sm">Tlenek</button>
+                        <button onclick="updateDetails('Cytrynian')" class="px-4 py-2 rounded-full border border-gray-200 hover:bg-gray-50 text-sm">Cytrynian</button>
+                        <button onclick="updateDetails('Diglicynian')" class="px-4 py-2 rounded-full border border-gray-200 hover:bg-gray-50 text-sm">Diglicynian</button>
+                        <button onclick="updateDetails('Jabłczan')" class="px-4 py-2 rounded-full border border-gray-200 hover:bg-gray-50 text-sm">Jabłczan</button>
+                        <button onclick="updateDetails('L-Treonian')" class="px-4 py-2 rounded-full border border-gray-200 hover:bg-gray-50 text-sm">L-Treonian</button>
+                        <button onclick="updateDetails('Chlorek')" class="px-4 py-2 rounded-full border border-gray-200 hover:bg-gray-50 text-sm">Chlorek</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 2: Experts -->
+    <section id="experts" class="py-20">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-[#2c3e50] mb-4">Protokoły Eksperckie</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto italic">Jak topowi naukowcy i lekarze medycyny prewencyjnej suplementują magnez?</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Attia -->
+                <div class="expert-card p-8 rounded-[2.5rem] bg-white border border-gray-100 shadow-sm flex flex-col h-full">
+                    <div class="mb-6 flex items-center space-x-4">
+                        <div class="w-12 h-12 rounded-full bg-[#d4a373] flex items-center justify-center text-white font-bold">PA</div>
+                        <div>
+                            <h4 class="font-bold">Dr Peter Attia</h4>
+                            <p class="text-xs text-gray-400 uppercase">Długowieczność & Post</p>
+                        </div>
+                    </div>
+                    <ul class="text-sm space-y-4 text-gray-600 flex-grow">
+                        <li class="flex items-start"><span class="text-[#d4a373] mr-2">•</span> Celem jest 1g całkowitego Mg na dobę.</li>
+                        <li class="flex items-start"><span class="text-[#d4a373] mr-2">•</span> <strong>SlowMag (Chlorek)</strong> podczas postów, by zapobiec skurczom.</li>
+                        <li class="flex items-start"><span class="text-[#d4a373] mr-2">•</span> <strong>Tlenek</strong> przed snem na regulację jelit.</li>
+                    </ul>
+                </div>
+
+                <!-- Huberman -->
+                <div class="expert-card p-8 rounded-[2.5rem] bg-[#4a5d4e] text-white shadow-xl flex flex-col h-full">
+                    <div class="mb-6 flex items-center space-x-4">
+                        <div class="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center text-white font-bold">AH</div>
+                        <div>
+                            <h4 class="font-bold">Dr Andrew Huberman</h4>
+                            <p class="text-xs text-emerald-200 uppercase">Neurobiologia Snu</p>
+                        </div>
+                    </div>
+                    <ul class="text-sm space-y-4 text-emerald-50 flex-grow">
+                        <li class="flex items-start"><span class="text-[#d4a373] mr-2">•</span> <strong>Sleep Stack:</strong> Treonian lub Diglicynian.</li>
+                        <li class="flex items-start"><span class="text-[#d4a373] mr-2">•</span> 145mg elementarnego Mg z Treonianu na 30-60 min przed snem.</li>
+                        <li class="flex items-start"><span class="text-[#d4a373] mr-2">•</span> Unikanie melatoniny na rzecz Mg i Apigeniny.</li>
+                    </ul>
+                </div>
+
+                <!-- Patrick -->
+                <div class="expert-card p-8 rounded-[2.5rem] bg-white border border-gray-100 shadow-sm flex flex-col h-full">
+                    <div class="mb-6 flex items-center space-x-4">
+                        <div class="w-12 h-12 rounded-full bg-[#7c9082] flex items-center justify-center text-white font-bold">RP</div>
+                        <div>
+                            <h4 class="font-bold">Dr Rhonda Patrick</h4>
+                            <p class="text-xs text-gray-400 uppercase">Genetyka & Metabolizm</p>
+                        </div>
+                    </div>
+                    <ul class="text-sm space-y-4 text-gray-600 flex-grow">
+                        <li class="flex items-start"><span class="text-[#d4a373] mr-2">•</span> Mg jest niezbędny do aktywacji witaminy D.</li>
+                        <li class="flex items-start"><span class="text-[#d4a373] mr-2">•</span> Preferuje <strong>Diglicynian</strong> (Pure Encapsulations).</li>
+                        <li class="flex items-start"><span class="text-[#d4a373] mr-2">•</span> Zwiększone dawki przy saunie i sporcie.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 3: Reddit Risks (The Estrogen Story) -->
+    <section id="risks" class="py-20 bg-slate-900 text-white overflow-hidden">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid lg:grid-cols-2 gap-16 items-center">
+                <div>
+                    <h2 class="text-4xl font-bold mb-6">Wiedza ze społeczności <span class="text-orange-500">Reddit</span></h2>
+                    <p class="text-slate-400 mb-8 leading-relaxed">
+                        Analiza wątków r/Biohackers i r/breastcancer ujawnia istotne ostrzeżenia, których brakuje w ulotkach. Glicyna w diglicynianie magnezu może mieć wpływ na gospodarkę hormonalną.
+                    </p>
+                    <div class="space-y-6">
+                        <div class="bg-slate-800/50 p-6 rounded-2xl border-l-4 border-red-500">
+                            <h5 class="font-bold text-red-400 mb-2">Alert: Endometrioza i Rak Piersi</h5>
+                            <p class="text-sm text-slate-300">Glicyna może podnosić poziom estrogenów. Pacjentki onkologiczne powinny preferować cytrynian lub jabłczan zamiast diglicynianu.</p>
+                        </div>
+                        <div class="bg-slate-800/50 p-6 rounded-2xl border-l-4 border-yellow-500">
+                            <h5 class="font-bold text-yellow-400 mb-2">Apigenina - Efekt Bifazyczny</h5>
+                            <p class="text-sm text-slate-300">W niskich dawkach stymuluje wzrost komórek nowotworowych, w wysokich działa cytostatycznie. Zachowaj ostrożność.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="relative">
+                    <div class="absolute inset-0 bg-emerald-500/10 blur-3xl rounded-full"></div>
+                    <div class="relative bg-slate-800 p-8 rounded-3xl border border-slate-700">
+                        <h4 class="text-xl font-bold mb-4">Głos użytkowników</h4>
+                        <div class="space-y-4">
+                            <div class="p-4 bg-slate-700/50 rounded-xl italic text-sm">
+                                "Po diglicynianie czuję niesamowite wyciszenie, ale u mojej żony (endometrioza) nasilił się ból. Przejście na jabłczan rozwiązało problem."
+                            </div>
+                            <div class="p-4 bg-slate-700/50 rounded-xl italic text-sm text-slate-400 text-right">
+                                — r/Biohackers
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 4: Market Database -->
+    <section id="market" class="py-20">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-12">
+                <div>
+                    <h2 class="text-3xl font-bold text-[#2c3e50]">Przewodnik Sourcingowy PL</h2>
+                    <p class="mt-2 text-gray-500">Gdzie kupić czysty magnez bez metali ciężkich?</p>
+                </div>
+                <div class="mt-6 md:mt-0">
+                    <input type="text" id="marketSearch" onkeyup="filterMarket()" placeholder="Szukaj marki lub formy..." class="px-6 py-3 rounded-full border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#4a5d4e]">
+                </div>
+            </div>
+
+            <div class="overflow-hidden rounded-3xl border border-gray-100 bg-white shadow-sm overflow-x-auto">
+                <table class="w-full text-left border-collapse" id="marketTable">
+                    <thead class="bg-[#fdfbf7]">
+                        <tr>
+                            <th class="px-6 py-4 font-bold text-sm uppercase text-gray-400 tracking-wider">Kategoria</th>
+                            <th class="px-6 py-4 font-bold text-sm uppercase text-gray-400 tracking-wider">Dostawca / Marka</th>
+                            <th class="px-6 py-4 font-bold text-sm uppercase text-gray-400 tracking-wider">Specyfikacja</th>
+                            <th class="px-6 py-4 font-bold text-sm uppercase text-gray-400 tracking-wider">Zastosowanie</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-50">
+                        <tr>
+                            <td class="px-6 py-4"><span class="px-2 py-1 bg-emerald-100 text-emerald-700 text-xs font-bold rounded uppercase">CZDA</span></td>
+                            <td class="px-6 py-4 font-semibold">Stanlab / Biomus</td>
+                            <td class="px-6 py-4 text-sm">Chlorek Magnezu 6H2O</td>
+                            <td class="px-6 py-4 text-sm text-gray-500">Oliwa magnezowa, kąpiele</td>
+                        </tr>
+                        <tr>
+                            <td class="px-6 py-4"><span class="px-2 py-1 bg-[#4a5d4e] text-white text-xs font-bold rounded uppercase">Premium</span></td>
+                            <td class="px-6 py-4 font-semibold">Aliness (MedicaLine)</td>
+                            <td class="px-6 py-4 text-sm">Magtein® L-Treonian</td>
+                            <td class="px-6 py-4 text-sm text-gray-500">Pamięć, neuroplastyczność</td>
+                        </tr>
+                        <tr>
+                            <td class="px-6 py-4"><span class="px-2 py-1 bg-[#d4a373] text-white text-xs font-bold rounded uppercase">Ekonomiczny</span></td>
+                            <td class="px-6 py-4 font-semibold">OstroVit</td>
+                            <td class="px-6 py-4 text-sm">Glicynian / Cytrynian</td>
+                            <td class="px-6 py-4 text-sm text-gray-500">Codzienna suplementacja</td>
+                        </tr>
+                        <tr>
+                            <td class="px-6 py-4"><span class="px-2 py-1 bg-slate-200 text-slate-600 text-xs font-bold rounded uppercase">Techniczny</span></td>
+                            <td class="px-6 py-4 font-semibold">Distripark / Aurepio</td>
+                            <td class="px-6 py-4 text-sm">Płatki drogowe / MgCl2</td>
+                            <td class="px-6 py-4 text-sm text-red-400 font-bold">UWAGA: Tylko odśnieżanie</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-white py-12 border-t border-gray-100 text-center">
+        <p class="text-gray-400 text-sm">© 2024 Magnesium Deep Research. Materiał edukacyjny na podstawie raportu biochemicznego.</p>
+        <p class="text-xs text-gray-300 mt-2">Dystrybucja MgCl2 5H2O oraz 6H2O zgodnie z klasą czystości.</p>
+    </footer>
+
+    <script>
+        const mgData = {
+            'Tlenek': {
+                mg: '60.3%',
+                bio: 'Niska (4%)',
+                desc: 'Głównie efekt przeczyszczający. Słabo wchłanialny systemowo, świetny na atonię jelit.',
+                chart: [60, 4]
+            },
+            'Cytrynian': {
+                mg: '16%',
+                bio: 'Wysoka',
+                desc: 'Standard "złotego środka". Dobra rozpuszczalność, świetny na nocne skurcze i nerki.',
+                chart: [16, 85]
+            },
+            'Diglicynian': {
+                mg: '14%',
+                bio: 'Ekstremalna',
+                desc: 'Chelat aminokwasowy. Nie przeczyszcza, uspokaja układ nerwowy, ułatwia zasypianie.',
+                chart: [14, 95]
+            },
+            'Jabłczan': {
+                mg: '15%',
+                bio: 'Wysoka',
+                desc: 'Kwas jabłkowy wspomaga mitochondria. Najlepszy na zmęczenie i dla sportowców.',
+                chart: [15, 80]
+            },
+            'L-Treonian': {
+                mg: '8%',
+                bio: 'Mózgowa',
+                desc: 'Przenika barierę krew-mózg. Optymalizacja kognitywna, pamięć i odmłodzenie wieku mózgu.',
+                chart: [8, 90]
+            },
+            'Chlorek': {
+                mg: '12%',
+                bio: 'Szybka',
+                desc: 'Dynamiczna jonizacja. Idealny do kąpieli i suplementacji w trakcie postu.',
+                chart: [12, 75]
+            }
+        };
+
+        let chart;
+        function initChart() {
+            const ctx = document.getElementById('mgChart').getContext('2d');
+            chart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(mgData),
+                    datasets: [
+                        {
+                            label: 'Zawartość Jonowa (%)',
+                            data: Object.values(mgData).map(d => d.chart[0]),
+                            backgroundColor: '#d4a373',
+                            borderRadius: 8
+                        },
+                        {
+                            label: 'Biodostępność (Skala)',
+                            data: Object.values(mgData).map(d => d.chart[1]),
+                            backgroundColor: '#4a5d4e',
+                            borderRadius: 8
+                        }
+                    ]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    responsive: true,
+                    onClick: (evt, elements) => {
+                        if (elements.length > 0) {
+                            const index = elements[0].index;
+                            updateDetails(Object.keys(mgData)[index]);
+                        }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, grid: { display: false } },
+                        x: { grid: { display: false } }
+                    },
+                    plugins: {
+                        legend: { position: 'top', labels: { font: { weight: 'bold' } } }
+                    }
+                }
+            });
+        }
+
+        function updateDetails(key) {
+            const data = mgData[key];
+            document.getElementById('detailTitle').innerText = key;
+            document.getElementById('detailDesc').innerText = data.desc;
+            document.getElementById('detailMg').innerText = data.mg;
+            document.getElementById('detailBio').innerText = data.bio;
+            
+            const card = document.getElementById('formDetails');
+            card.style.transform = 'scale(1.02)';
+            setTimeout(() => card.style.transform = 'scale(1)', 200);
+        }
+
+        function filterMarket() {
+            const input = document.getElementById('marketSearch');
+            const filter = input.value.toUpperCase();
+            const table = document.getElementById('marketTable');
+            const tr = table.getElementsByTagName('tr');
+
+            for (let i = 1; i < tr.length; i++) {
+                let td = tr[i].getElementsByTagName('td');
+                let found = false;
+                for (let j = 0; j < td.length; j++) {
+                    if (td[j].innerHTML.toUpperCase().indexOf(filter) > -1) {
+                        found = true;
+                    }
+                }
+                tr[i].style.display = found ? "" : "none";
+            }
+        }
+
+        window.onload = initChart;
+    </script>
+</body>
+</html>

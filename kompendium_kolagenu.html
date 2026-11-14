@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kompendium Suplementacji Kolagenu</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fdfbf7;
+            color: #2d3436;
+            scroll-behavior: smooth;
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 1rem;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-link {
+            transition: color 0.3s ease, border-color 0.3s ease;
+        }
+
+        .active-tab {
+            border-bottom: 3px solid #d4a373;
+            color: #d4a373;
+        }
+
+        .expert-card:hover {
+            transform: translateY(-5px);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+    </style>
+</head>
+<body>
+<a href="index.html" style="position:fixed;top:14px;left:14px;z-index:9999;font:600 0.85rem/1 -apple-system,BlinkMacSystemFont,sans-serif;color:#2F6B4F;background:#fff;border:1px solid #E3E6E0;border-radius:999px;padding:8px 14px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.08);">← Index</a>
+    <!-- Chosen Palette: Silky Radiance (Warm Neutrals, Cream, Deep Slate, Soft Coral) -->
+    <!-- Application Structure Plan: 
+        1. Hero & Navigation: Szybki dostęp do kluczowych sekcji.
+        2. Dashboard Typologii: Interaktywne porównanie HC vs UC-II z wizualizacją parametrów.
+        3. Atlas Mechanizmów: Sekcja edukacyjna o stawach, ścięgnach i skórze.
+        4. Panel Ekspercki: Przegląd protokołów Hubermana, Attii i Patrick.
+        5. Interaktywny Selektor Dawkowania: Narzędzie dobierające dawkę i CZAS stosowania do celu.
+        6. Bezpieczeństwo & Społeczność: Analiza trądziku i doświadczeń z Reddit.
+    -->
+    <!-- Visualization & Content Choices: 
+        - Bar Chart (Chart.js): Masa cząsteczkowa (Cel: Edukacja o wchłanianiu).
+        - Interactive Selector (JS): Kalkulator z czasem trwania kuracji (Cel: Realistyczne oczekiwania użytkownika).
+        - Minimalist Cards: Eksperci (Cel: Przejrzystość).
+        CONFIRMATION: NO SVG graphics used. NO Mermaid JS used.
+    -->
+
+    <nav class="sticky top-0 z-50 bg-white/90 border-b border-stone-200 px-6 py-4 shadow-sm">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <h1 class="text-xl font-bold text-stone-800">Kolagen <span class="text-stone-400">Deep Research</span></h1>
+            <div class="flex flex-wrap justify-center gap-6 text-sm font-medium">
+                <a href="#biochemia" class="nav-link hover:text-stone-600">Biochemia</a>
+                <a href="#mechanizmy" class="nav-link hover:text-stone-600">Mechanizmy</a>
+                <a href="#eksperci" class="nav-link hover:text-stone-600">Eksperci</a>
+                <a href="#dawkowanie" class="nav-link hover:text-stone-600 bg-stone-800 text-white px-3 py-1 rounded-full">Kalkulator Dawkowania</a>
+            </div>
+        </div>
+    </nav>
+
+    <header class="max-w-4xl mx-auto pt-16 pb-12 px-6 text-center">
+        <span class="text-stone-500 uppercase tracking-widest text-xs font-semibold">Analiza Przeglądowa i Protokoły</span>
+        <h2 class="text-4xl md:text-5xl font-bold mt-4 text-stone-900 leading-tight">Zrozumieć Kolagen: Od Biochemii do Praktyki Klinicznej</h2>
+        <p class="text-stone-600 mt-6 text-lg leading-relaxed">
+            Aplikacja agreguje dane z raportów klinicznych i badań metabolicznych. Dowiedz się, dlaczego regularność i odpowiedni czas trwania suplementacji są ważniejsze niż sama dawka.
+        </p>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-6 space-y-24 pb-24">
+        
+        <!-- Sekcja 1: Biochemia -->
+        <section id="biochemia" class="space-y-8">
+            <div class="text-center md:text-left max-w-2xl">
+                <h3 class="text-3xl font-bold text-stone-800">1. Typologia i Masa Cząsteczkowa</h3>
+                <p class="text-stone-600 mt-2">Wielkość cząsteczki determinuje drogę wchłaniania i docelowe miejsce działania w organizmie.</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8 items-center">
+                <div class="chart-container glass-card p-4">
+                    <canvas id="molecularWeightChart"></canvas>
+                </div>
+                <div class="space-y-4">
+                    <div class="p-6 bg-white rounded-xl shadow-sm border border-stone-100">
+                        <h4 class="font-bold text-stone-800 border-b pb-2 mb-3">Hydrolizowany (HC)</h4>
+                        <ul class="text-sm space-y-2 text-stone-600">
+                            <li>• <strong>Wielkość:</strong> 1-5 kDa (małe peptydy).</li>
+                            <li>• <strong>Działanie:</strong> Dostarcza aminokwasów budulcowych.</li>
+                            <li>• <strong>Cel:</strong> Skóra, ścięgna, masa kostna.</li>
+                        </ul>
+                    </div>
+                    <div class="p-6 bg-stone-50 rounded-xl shadow-sm border border-stone-200">
+                        <h4 class="font-bold text-stone-800 border-b pb-2 mb-3">Nienaturyzowany II (UC-II)</h4>
+                        <ul class="text-sm space-y-2 text-stone-600">
+                            <li>• <strong>Wielkość:</strong> ~300 kDa (wielka struktura).</li>
+                            <li>• <strong>Działanie:</strong> Modulacja odpowiedzi immunologicznej.</li>
+                            <li>• <strong>Cel:</strong> Redukcja bólu stawów i stanów zapalnych.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sekcja 2: Mechanizmy -->
+        <section id="mechanizmy" class="space-y-12">
+            <div class="text-center max-w-3xl mx-auto">
+                <h3 class="text-3xl font-bold text-stone-800">2. Mechanizmy Fizjologiczne</h3>
+                <p class="text-stone-600 mt-4 italic text-sm">Zrozumienie jak działa tkanka, pozwala dobrać optymalny czas suplementacji.</p>
+            </div>
+
+            <div class="flex justify-center gap-4 border-b border-stone-200 overflow-x-auto pb-1">
+                <button onclick="switchMechanism('stawy')" id="btn-stawy" class="mechanism-btn px-6 py-2 font-semibold active-tab">Stawy & Chrząstka</button>
+                <button onclick="switchMechanism('sciegna')" id="btn-sciegna" class="mechanism-btn px-6 py-2 font-semibold text-stone-400">Ścięgna & Więzadła</button>
+                <button onclick="switchMechanism('skora')" id="btn-skora" class="mechanism-btn px-6 py-2 font-semibold text-stone-400">Skóra & Wygląd</button>
+            </div>
+
+            <div id="mechanism-content" class="glass-card p-8 min-h-[300px]">
+                <!-- Default State (Stawy) -->
+                <div class="grid md:grid-cols-2 gap-12 items-center animate-fade-in">
+                    <div>
+                        <h4 class="text-2xl font-bold text-stone-800">Chrząstka i Tolerancja Ustna</h4>
+                        <p class="text-stone-600 mt-4 leading-relaxed">
+                            Suplementacja UC-II wymaga czasu na "przeprogramowanie" układu odpornościowego. Badania kliniczne wskazują, że proces wyciszania metaloproteinaz niszczących chrząstkę osiąga stabilny poziom dopiero po 90 dniach.
+                        </p>
+                        <div class="mt-6 flex gap-4">
+                            <span class="bg-stone-100 text-stone-700 px-3 py-1 rounded text-xs font-bold uppercase">Cytokiny: IL-10</span>
+                            <span class="bg-stone-100 text-stone-700 px-3 py-1 rounded text-xs font-bold uppercase">Czas: min. 3 miesiące</span>
+                        </div>
+                    </div>
+                    <div class="bg-stone-50 rounded-lg p-6 flex flex-col justify-center items-center text-center">
+                        <div class="text-4xl mb-4">🛡️</div>
+                        <p class="text-sm font-medium text-stone-500">To nie jest "lek przeciwbólowy" - to systemowa zmiana metaboliczna wewnątrz stawu.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sekcja 3: Eksperci -->
+        <section id="eksperci" class="space-y-8">
+            <div class="text-center max-w-2xl mx-auto">
+                <h3 class="text-3xl font-bold text-stone-800">3. Co mówią autorytety?</h3>
+                <p class="text-stone-600 mt-2">Wnioski z protokołów stosowanych przez liderów medycyny prewencyjnej.</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="expert-card glass-card p-6 border-t-4 border-stone-800">
+                    <div class="font-bold text-lg mb-2">Andrew Huberman</div>
+                    <p class="text-sm text-stone-600 mb-4">Podkreśla rolę <strong>witaminy C</strong> jako kofaktora. Zaleca hydrolizat na 60 min przed treningiem ukierunkowanym na ścięgna.</p>
+                    <div class="text-xs font-bold text-stone-400">KLUCZ: Okno metaboliczne</div>
+                </div>
+                <div class="expert-card glass-card p-6 border-t-4 border-stone-400">
+                    <div class="font-bold text-lg mb-2">Peter Attia</div>
+                    <p class="text-sm text-stone-600 mb-4">Skupia się na profilu aminokwasowym. Zwraca uwagę, że kolagen nie jest kompletnym białkiem dla mięśni, ale jest kluczowy dla <strong>macierzy zewnątrzkomórkowej</strong>.</p>
+                    <div class="text-xs font-bold text-stone-400">KLUCZ: Regeneracja tkanek miękkich</div>
+                </div>
+                <div class="expert-card glass-card p-6 border-t-4 border-rose-200">
+                    <div class="font-bold text-lg mb-2">Rhonda Patrick</div>
+                    <p class="text-sm text-stone-600 mb-4">Akcentuje potrzebę wysokich dawek glicyny (dostępnej w kolagenie) dla <strong>detoksykacji</strong> i stabilizacji kolagenu w wysokich temperaturach (sauna).</p>
+                    <div class="text-xs font-bold text-stone-400">KLUCZ: Synergia z ciepłem</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sekcja 4: Kalkulator Dawkowania (Updated) -->
+        <section id="dawkowanie" class="bg-stone-900 text-white rounded-3xl p-8 md:p-12 space-y-10 shadow-2xl">
+            <div class="text-center">
+                <h3 class="text-3xl font-bold">Asystent Dawkowania i Planowania</h3>
+                <p class="text-stone-400 mt-2">Zdefiniuj swój cel, aby poznać dawkę i niezbędny czas kuracji.</p>
+            </div>
+
+            <div class="flex flex-wrap justify-center gap-4">
+                <button onclick="calculateDose('tendon')" class="bg-white text-stone-900 px-6 py-3 rounded-full font-bold hover:bg-stone-200 transition">Ścięgna / Więzadła</button>
+                <button onclick="calculateDose('joint')" class="bg-stone-800 border border-stone-700 text-white px-6 py-3 rounded-full font-bold hover:bg-stone-700 transition">Ból Stawów (OA)</button>
+                <button onclick="calculateDose('skin')" class="bg-stone-800 border border-stone-700 text-white px-6 py-3 rounded-full font-bold hover:bg-stone-700 transition">Skóra / Paznokcie</button>
+                <button onclick="calculateDose('bone')" class="bg-stone-800 border border-stone-700 text-white px-6 py-3 rounded-full font-bold hover:bg-stone-700 transition">Gęstość Kości</button>
+            </div>
+
+            <div id="dose-result" class="bg-stone-800/50 rounded-2xl p-8 min-h-[250px] border border-stone-700/50 flex flex-col items-center justify-center text-center">
+                <p class="text-stone-500 italic">Wybierz cel powyżej, aby zobaczyć szczegóły protokołu...</p>
+            </div>
+        </section>
+
+        <!-- Sekcja 5: Problemy -->
+        <section class="space-y-8">
+            <div class="text-center max-w-2xl mx-auto">
+                <h3 class="text-3xl font-bold text-stone-800">4. Przeciwwskazania i Anekdoty</h3>
+                <p class="text-stone-600 mt-2">Dlaczego niektórzy rezygnują? Analiza problemów raportowanych na grupach biohackingowych.</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="p-8 bg-rose-50 rounded-2xl">
+                    <h4 class="font-bold text-rose-900 mb-4 flex items-center gap-2">
+                        <span>⚠️</span> Zagadka Trądziku
+                    </h4>
+                    <p class="text-sm text-rose-800 leading-relaxed">
+                        Wiele osób na Reddit zgłasza "Collagen Acne". Przyczyną często nie jest sam kolagen, a <strong>nadmiar Biotyny</strong> w preparatach "Beauty", który konkuruje z witaminą B5 o te same receptory w jelitach, co prowadzi do zaburzeń bariery lipidowej skóry.
+                    </p>
+                </div>
+                <div class="p-8 bg-stone-100 rounded-2xl">
+                    <h4 class="font-bold text-stone-800 mb-4 flex items-center gap-2">
+                        <span>💡</span> Wskazówka Praktyczna
+                    </h4>
+                    <p class="text-sm text-stone-600 leading-relaxed italic">
+                        "Jeśli nie widzisz efektów na stawy po miesiącu, nie zwiększaj dawki. Sprawdź, czy Twoja podaż witaminy C przekracza 500mg i czy suplementujesz kolagen rano, aby uniknąć konkurencji z aminokwasami z obiadu."
+                    </p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-stone-50 border-t border-stone-200 py-12 text-center text-stone-500 text-sm">
+        <div class="max-w-4xl mx-auto px-6">
+            <p>© 2026 Kompendium Kolagenu. Opracowano na podstawie analizy PubMed i protokołów Hubermana.</p>
+            <p class="mt-2 font-semibold text-stone-400 italic">Prezentowane dane mają charakter informacyjny i nie zastępują porady lekarskiej.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Wykres masy cząsteczkowej
+        const ctx = document.getElementById('molecularWeightChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Hydrolizat (HC)', 'Kolagen Natywny (UC-II)'],
+                datasets: [{
+                    label: 'Masa (kDa)',
+                    data: [3, 300],
+                    backgroundColor: ['#d4a373', '#2d3436'],
+                    borderRadius: 8,
+                    barThickness: 50
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'Kilo Daltony (kDa)' }
+                    }
+                }
+            }
+        });
+
+        // Przełączanie mechanizmów
+        function switchMechanism(type) {
+            const content = document.getElementById('mechanism-content');
+            const btns = document.querySelectorAll('.mechanism-btn');
+            
+            btns.forEach(btn => {
+                btn.classList.remove('active-tab');
+                btn.classList.add('text-stone-400');
+            });
+            document.getElementById(`btn-${type}`).classList.add('active-tab');
+            document.getElementById(`btn-${type}`).classList.remove('text-stone-400');
+
+            let html = '';
+            if(type === 'stawy') {
+                html = `<div class="grid md:grid-cols-2 gap-12 items-center animate-fade-in">
+                            <div>
+                                <h4 class="text-2xl font-bold text-stone-800">Chrząstka i Tolerancja Ustna</h4>
+                                <p class="text-stone-600 mt-4 leading-relaxed">UC-II działa poprzez wygaszanie stanów zapalnych. Jest to proces immunologiczny, który wymaga regularnego kontaktu z receptorami w jelitach przez długi czas.</p>
+                                <div class="mt-6 flex gap-4">
+                                    <span class="bg-stone-100 text-stone-700 px-3 py-1 rounded text-xs font-bold">Redukcja OA</span>
+                                    <span class="bg-stone-100 text-stone-700 px-3 py-1 rounded text-xs font-bold">Min. 12-24 tyg.</span>
+                                </div>
+                            </div>
+                            <div class="bg-stone-50 rounded-lg p-6 text-center"><div class="text-4xl mb-2">🛡️</div><p class="text-xs text-stone-500">Hamuje destrukcję kolagenu typu II przez limfocyty T.</p></div>
+                        </div>`;
+            } else if(type === 'sciegna') {
+                html = `<div class="grid md:grid-cols-2 gap-12 items-center animate-fade-in">
+                            <div>
+                                <h4 class="text-2xl font-bold text-stone-800">Ścięgna: Mechanotransdukcja</h4>
+                                <p class="text-stone-600 mt-4 leading-relaxed">Ścięgna potrzebują bodźca mechanicznego, aby zassać aminokwasy. Suplementacja bez treningu (izometria) ma znikomą skuteczność dla ścięgien.</p>
+                                <div class="mt-6 flex gap-4">
+                                    <span class="bg-stone-100 text-stone-700 px-3 py-1 rounded text-xs font-bold">Przebudowa włókien</span>
+                                    <span class="bg-stone-100 text-stone-700 px-3 py-1 rounded text-xs font-bold">3-6 miesięcy</span>
+                                </div>
+                            </div>
+                            <div class="bg-stone-100 rounded-lg p-6 text-center"><div class="text-4xl mb-2">⚡</div><p class="text-xs text-stone-500">Kluczowy protokół Keitha Baara (obciążenie + żelatyna/wit C).</p></div>
+                        </div>`;
+            } else if(type === 'skora') {
+                html = `<div class="grid md:grid-cols-2 gap-12 items-center animate-fade-in">
+                            <div>
+                                <h4 class="text-2xl font-bold text-stone-800">Macierz Skóry</h4>
+                                <p class="text-stone-600 mt-4 leading-relaxed">Wzrost gęstości skóry i poziomu nawilżenia jest mierzalny już po 8 tygodniach, jednak maksymalne efekty anti-aging wymagają kontynuacji.</p>
+                                <div class="mt-6 flex gap-4">
+                                    <span class="bg-stone-100 text-stone-700 px-3 py-1 rounded text-xs font-bold">Fibroblasty</span>
+                                    <span class="bg-stone-100 text-stone-700 px-3 py-1 rounded text-xs font-bold">8-12 tygodni</span>
+                                </div>
+                            </div>
+                            <div class="bg-rose-50 rounded-lg p-6 text-center"><div class="text-4xl mb-2">✨</div><p class="text-xs text-stone-500">Peptydy stymulują produkcję własnego kwasu hialuronowego.</p></div>
+                        </div>`;
+            }
+            content.innerHTML = html;
+        }
+
+        // Kalkulator Dawkowania i Czasu
+        function calculateDose(target) {
+            const res = document.getElementById('dose-result');
+            let data = {};
+
+            switch(target) {
+                case 'tendon':
+                    data = {
+                        title: "Regeneracja Ścięgien i Więzadeł",
+                        dose: "15-20g Hydrolizatu / Żelatyny",
+                        duration: "3 - 6 miesięcy",
+                        timing: "60 min PRZED treningiem",
+                        note: "Wymaga specyficznego bodźca mechanicznego (np. 10 min skakanki lub izometrii) dla dostarczenia składników do tkanki."
+                    };
+                    break;
+                case 'joint':
+                    data = {
+                        title: "Bóle Stawowe i Zwyrodnienia (OA)",
+                        dose: "40mg UC-II (Nienaturyzowany)",
+                        duration: "4 - 6 miesięcy (minimum)",
+                        timing: "Rano, na czczo",
+                        note: "Pierwsze efekty odczuwalne po 90 dniach. Przerwanie suplementacji wcześniej skutkuje powrotem stanu zapalnego."
+                    };
+                    break;
+                case 'skin':
+                    data = {
+                        title: "Poprawa Stanu Skóry i Paznokci",
+                        dose: "2.5g - 10g Hydrolizatu (Typ I/III)",
+                        duration: "2 - 3 miesiące",
+                        timing: "Dowolnie, najlepiej wieczorem",
+                        note: "Dla optymalnych efektów połącz z 1g MSM oraz 500mg Witaminy C. Unikaj Biotyny przy skłonnościach do trądziku."
+                    };
+                    break;
+                case 'bone':
+                    data = {
+                        title: "Wsparcie Gęstości Kości",
+                        dose: "5g - 10g Hydrolizatu",
+                        duration: "6 - 12 miesięcy",
+                        timing: "Z kolacją",
+                        note: "Kości przebudowują się najwolniej. Suplementacja musi być długofalowa i wspierana witaminą D3 oraz K2."
+                    };
+                    break;
+            }
+
+            res.innerHTML = `
+                <div class="animate-fade-in w-full">
+                    <h4 class="text-2xl font-bold text-white mb-6">${data.title}</h4>
+                    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4 text-left">
+                        <div class="bg-stone-800 p-4 rounded-xl border border-stone-700">
+                            <span class="text-stone-500 text-xs uppercase font-bold">Dawka</span>
+                            <p class="text-md font-semibold text-stone-200">${data.dose}</p>
+                        </div>
+                        <div class="bg-stone-800 p-4 rounded-xl border border-stone-700">
+                            <span class="text-stone-500 text-xs uppercase font-bold">Okres stosowania</span>
+                            <p class="text-md font-bold text-orange-200">${data.duration}</p>
+                        </div>
+                        <div class="bg-stone-800 p-4 rounded-xl border border-stone-700">
+                            <span class="text-stone-500 text-xs uppercase font-bold">Moment podania</span>
+                            <p class="text-md font-semibold text-stone-200">${data.timing}</p>
+                        </div>
+                        <div class="bg-stone-800 p-4 rounded-xl border border-stone-700">
+                            <span class="text-stone-500 text-xs uppercase font-bold">Uwaga</span>
+                            <p class="text-xs text-stone-400 mt-1">${data.note}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>

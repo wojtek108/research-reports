@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeuroArchitekt: Interaktywny Przewodnik po Neuroplastyczności</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f7f2;
+            color: #2d2d2d;
+            overflow-x: hidden;
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(220, 220, 200, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+        }
+
+        .nav-link {
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -4px;
+            left: 0;
+            background-color: #4a7c7c;
+            transition: width 0.3s ease;
+        }
+
+        .nav-link.active::after {
+            width: 100%;
+        }
+
+        @media (min-width: 768px) {
+            .chart-container { height: 350px; }
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+<a href="index.html" style="position:fixed;top:14px;left:14px;z-index:9999;font:600 0.85rem/1 -apple-system,BlinkMacSystemFont,sans-serif;color:#2F6B4F;background:#fff;border:1px solid #E3E6E0;border-radius:999px;padding:8px 14px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.08);">← Index</a>
+
+    <nav class="sticky top-0 z-50 bg-[#f8f7f2]/80 backdrop-blur-md border-b border-stone-200">
+        <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+                <div class="w-8 h-8 bg-[#4a7c7c] rounded-lg flex items-center justify-center text-white font-bold">N</div>
+                <span class="text-xl font-bold tracking-tight text-[#4a7c7c]">NeuroArchitekt</span>
+            </div>
+            <div class="hidden md:flex space-x-8 text-sm font-medium">
+                <button onclick="showSection('bio')" class="nav-link active" id="nav-bio">Biologia</button>
+                <button onclick="showSection('proto')" class="nav-link" id="nav-proto">Protokoły</button>
+                <button onclick="showSection('move')" class="nav-link" id="nav-move">Ruch</button>
+                <button onclick="showSection('chem')" class="nav-link" id="nav-chem">Biochemia</button>
+                <button onclick="showSection('emo')" class="nav-link" id="nav-emo">Emocje</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-6xl mx-auto px-4 py-8">
+        
+        <header class="mb-12 text-center">
+            <h1 class="text-4xl md:text-5xl font-bold mb-4 text-stone-800">Projektowanie Mózgu</h1>
+            <p class="text-lg text-stone-600 max-w-2xl mx-auto">
+                Neuroplastyczność to nie tylko uczenie się. To system operacyjny Twojego mózgu, który możesz modyfikować poprzez precyzyjne interwencje behawioralne i metaboliczne.
+            </p>
+            <div class="mt-6 inline-flex items-center px-4 py-1.5 rounded-full bg-stone-200/50 border border-stone-300 text-stone-500 text-xs font-semibold tracking-wide uppercase">
+                Data opracowania raportu: <span id="current-date-header">...</span>
+            </div>
+        </header>
+
+        <!-- Sekcja Biologii -->
+        <section id="sec-bio" class="space-y-8 animate-in fade-in duration-500">
+            <div class="bg-white rounded-2xl p-8 shadow-sm border border-stone-100">
+                <h2 class="text-2xl font-bold mb-4 text-[#4a7c7c]">Podstawy Molekularne</h2>
+                <p class="mb-6 text-stone-600 leading-relaxed">
+                    W tej sekcji analizujemy fundamenty biologiczne zmian w mózgu. Kluczowym graczem jest białko <strong>BDNF</strong>, które działa jak "nawóz" dla neuronów, inicjując budowę nowych synaps. Zrozumienie tych mechanizmów pozwala na świadome dobieranie narzędzi stymulujących rozwój układu nerwowego.
+                </p>
+                <div class="grid md:grid-cols-2 gap-8 items-center">
+                    <div class="chart-container">
+                        <canvas id="bioChart"></canvas>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="p-4 bg-stone-50 rounded-xl border-l-4 border-[#4a7c7c]">
+                            <h3 class="font-semibold text-stone-800">Szlak BDNF-TrkB</h3>
+                            <p class="text-sm text-stone-600">Główny mechanizm wzrostu synaptycznego aktywowany przez ruch i sen.</p>
+                        </div>
+                        <div class="p-4 bg-stone-50 rounded-xl border-l-4 border-amber-400">
+                            <h3 class="font-semibold text-stone-800">Polimorfizm Val66Met</h3>
+                            <p class="text-sm text-stone-600">Genetyczna zmienność obniżająca wydajność uwalniania BDNF o 18-30%.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sekcja Protokołów -->
+        <section id="sec-proto" class="hidden space-y-8">
+            <div class="bg-white rounded-2xl p-8 shadow-sm border border-stone-100">
+                <h2 class="text-2xl font-bold mb-4 text-[#4a7c7c]">Protokoły Hubermana</h2>
+                <p class="mb-6 text-stone-600">
+                    Plastyczność wymaga przejścia przez specyficzne stany neurochemiczne. Andrew Huberman podkreśla, że proces ten nie jest liniowy – wymaga fazy wysokiego alertu (stresu) oraz głębokiego odpoczynku (konsolidacji). Poniżej znajdziesz interaktywny opis kroków niezbędnych do zainicjowania trwałych zmian w połączeniach neuronalnych.
+                </p>
+                
+                <div class="grid md:grid-cols-3 gap-6 mb-8">
+                    <button onclick="updateProtocol('focus')" class="p-6 text-left glass-card rounded-2xl border-b-4 border-blue-400">
+                        <span class="block text-xs font-bold uppercase tracking-wider text-blue-500 mb-2">Krok 1</span>
+                        <h4 class="font-bold text-lg mb-1">Skupienie & Alert</h4>
+                        <p class="text-xs text-stone-500">Adrenalina + Acetylocholina</p>
+                    </button>
+                    <button onclick="updateProtocol('errors')" class="p-6 text-left glass-card rounded-2xl border-b-4 border-red-400">
+                        <span class="block text-xs font-bold uppercase tracking-wider text-red-500 mb-2">Krok 2</span>
+                        <h4 class="font-bold text-lg mb-1">Sygnał Błędu</h4>
+                        <p class="text-xs text-stone-500">Norepinefryna + Frustracja</p>
+                    </button>
+                    <button onclick="updateProtocol('rest')" class="p-6 text-left glass-card rounded-2xl border-b-4 border-indigo-400">
+                        <span class="block text-xs font-bold uppercase tracking-wider text-indigo-500 mb-2">Krok 3</span>
+                        <h4 class="font-bold text-lg mb-1">Konsolidacja</h4>
+                        <p class="text-xs text-stone-500">Sen + NSDR</p>
+                    </button>
+                </div>
+
+                <div id="protocol-detail" class="p-8 bg-stone-50 rounded-2xl transition-all duration-500">
+                    <div id="protocol-content">
+                        <h3 class="text-xl font-bold mb-3 text-stone-800">Wybierz etap protokołu</h3>
+                        <p class="text-stone-600">Kliknij przycisk powyżej, aby zobaczyć szczegóły biologiczne i konkretne narzędzia.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sekcja Ruchu -->
+        <section id="sec-move" class="hidden space-y-8">
+            <div class="bg-white rounded-2xl p-8 shadow-sm border border-stone-100">
+                <h2 class="text-2xl font-bold mb-4 text-[#4a7c7c]">Ruch jako Neuro-Lekarstwo</h2>
+                <p class="text-stone-600 mb-6">
+                    Aktywność fizyczna to najsilniejszy znany behawioralny stymulant neuroplastyczności. Peter Attia i Rhonda Patrick wskazują na dwa główne szlaki metaboliczne, które bezpośrednio "ładują" zdolności kognitywne mózgu poprzez wyrzut mleczanu i optymalizację pracy mitochondriów.
+                </p>
+                <div class="grid md:grid-cols-2 gap-12">
+                    <div class="space-y-6">
+                        <ul class="space-y-4">
+                            <li class="flex items-start">
+                                <div class="mt-1 p-1 bg-green-100 text-green-600 rounded-full mr-3 text-xs">✓</div>
+                                <div><span class="font-bold block">HIIT & Mleczan</span><span class="text-sm text-stone-500">Krótkie, intensywne zrywy stymulują wyrzut BDNF.</span></div>
+                            </li>
+                            <li class="flex items-start">
+                                <div class="mt-1 p-1 bg-blue-100 text-blue-600 rounded-full mr-3 text-xs">✓</div>
+                                <div><span class="font-bold block">Zone 2 Cardio</span><span class="text-sm text-stone-500">Dłuższe sesje poprawiają unaczynienie i angiogenezę w mózgu.</span></div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="moveChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sekcja Biochemii -->
+        <section id="sec-chem" class="hidden space-y-8">
+            <div class="bg-white rounded-2xl p-8 shadow-sm border border-stone-100">
+                <h2 class="text-2xl font-bold mb-4 text-[#4a7c7c]">Wsparcie Chemiczne i Suplementacja</h2>
+                <p class="text-stone-600 mb-6">
+                    Wsparcie farmakologiczne i suplementacyjne ma na celu optymalizację środowiska chemicznego mózgu. Poniższa tabela przedstawia substancje o udokumentowanym wpływie na plastyczność, od codziennych minerałów po zaawansowane psychoplastogeny stosowane w terapiach klinicznych.
+                </p>
+                <div class="overflow-x-auto rounded-xl border border-stone-200">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-stone-50 text-stone-500">
+                            <tr><th class="px-6 py-4">Substancja</th><th class="px-6 py-4">Główny Cel</th><th class="px-6 py-4">Siła Interwencji</th><th class="px-6 py-4">Mechanizm</th></tr>
+                        </thead>
+                        <tbody class="divide-y divide-stone-200">
+                            <tr><td class="px-6 py-4 font-bold">Magnez L-Treonian</td><td class="px-6 py-4">Pamięć i Nauka</td><td class="px-6 py-4 text-amber-600 font-bold">ŚREDNIA</td><td class="px-6 py-4">Upregulacja receptorów NMDA</td></tr>
+                            <tr><td class="px-6 py-4 font-bold">Omega-3 (EPA/DHA)</td><td class="px-6 py-4">Struktura Neuronów</td><td class="px-6 py-4 text-blue-600 font-bold">FUNDAMENTALNA</td><td class="px-6 py-4">Płynność błon komórkowych</td></tr>
+                            <tr><td class="px-6 py-4 font-bold">Psychoplastogeny</td><td class="px-6 py-4">Trauma i Depresja</td><td class="px-6 py-4 text-red-600 font-bold">EKSTREMALNA</td><td class="px-6 py-4">Gwałtowny wzrost dendrytów</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sekcja Emocji -->
+        <section id="sec-emo" class="hidden space-y-8">
+            <div class="bg-white rounded-2xl p-8 shadow-sm border border-stone-100">
+                <h2 class="text-2xl font-bold mb-4 text-[#4a7c7c]">Zdrowienie Emocjonalne i Zmiana Nawyków</h2>
+                <p class="text-stone-600 mb-6">
+                    Neuroplastyczność to miecz obosieczny. Może prowadzić do utrwalenia lęku (maladaptacja) lub stanowić drogę do wolności emocjonalnej. W tej sekcji omawiamy, jak wykorzystać "okna plastyczności" do dekonstrukcji starych wzorców i nadpisywania ich nowymi, zdrowszymi reakcjami.
+                </p>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="p-6 bg-red-50 rounded-2xl border border-red-100">
+                        <h3 class="font-bold text-red-800 mb-3">Maladaptacja (Lęk)</h3>
+                        <p class="text-sm text-red-900 italic mb-4">"Mózg staje się ekspertem w tym, co powtarzasz – nawet jeśli jest to mechanizm obronny, który już Ci nie służy."</p>
+                        <p class="text-xs text-red-700">Wzmocnione obwody ciała migdałowatego.</p>
+                    </div>
+                    <div class="p-6 bg-emerald-50 rounded-2xl border border-emerald-100">
+                        <h3 class="font-bold text-emerald-800 mb-3">Rekonstrukcja (Rezyliencja)</h3>
+                        <p class="text-sm text-emerald-900 mb-4">Otwieranie okien plastyczności poprzez bezpieczną ekspozycję i świadome powtarzanie nowych reakcji poznawczych.</p>
+                        <p class="text-xs text-emerald-700">Aktywacja kory przedczołowej.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="mt-12 py-12 border-t border-stone-200 bg-stone-100/50">
+        <div class="max-w-6xl mx-auto px-4 text-center">
+            <p class="text-stone-500 text-sm">Opracowano na podstawie badań Hubermana, Attii, Patrick oraz współczesnej neuronauki klinicznej.</p>
+            <p class="text-stone-400 text-xs mt-2 uppercase tracking-widest font-medium">Raport wygenerowany: <span id="current-date-footer">...</span></p>
+        </div>
+    </footer>
+
+    <script>
+        const sections = ['bio', 'proto', 'move', 'chem', 'emo'];
+        let charts = {};
+
+        // Ustawianie dzisiejszej daty
+        function setDates() {
+            const now = new Date();
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            const formattedDate = now.toLocaleDateString('pl-PL', options);
+            document.getElementById('current-date-header').innerText = formattedDate;
+            document.getElementById('current-date-footer').innerText = formattedDate;
+        }
+
+        function showSection(id) {
+            sections.forEach(sec => {
+                document.getElementById(`sec-${sec}`).classList.add('hidden');
+                document.getElementById(`nav-${sec}`).classList.remove('active', 'text-[#4a7c7c]');
+            });
+            document.getElementById(`sec-${id}`).classList.remove('hidden');
+            document.getElementById(`nav-${id}`).classList.add('active', 'text-[#4a7c7c]');
+            
+            // Re-inicjalizacja wykresów dla zachowania responsywności przy przełączaniu kart
+            if (id === 'bio') setTimeout(initBioChart, 50);
+            if (id === 'move') setTimeout(initMoveChart, 50);
+        }
+
+        function initBioChart() {
+            if (charts.bio) charts.bio.destroy();
+            const ctx = document.getElementById('bioChart').getContext('2d');
+            charts.bio = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['BDNF', 'Synaptogeneza', 'Skupienie', 'Regeneracja', 'Neurogeneza'],
+                    datasets: [{
+                        label: 'Wpływ Interwencji Behawioralnych',
+                        data: [85, 70, 90, 65, 60],
+                        backgroundColor: 'rgba(74, 124, 124, 0.2)',
+                        borderColor: '#4a7c7c',
+                        borderWidth: 2,
+                        pointBackgroundColor: '#4a7c7c'
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: { display: false }
+                        }
+                    },
+                    plugins: { legend: { position: 'bottom' } }
+                }
+            });
+        }
+
+        function initMoveChart() {
+            if (charts.move) charts.move.destroy();
+            const ctx = document.getElementById('moveChart').getContext('2d');
+            charts.move = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Brak ruchu', 'Zone 2', 'HIIT', 'HIIT + Sauna'],
+                    datasets: [{
+                        label: 'Relatywny wzrost BDNF (%)',
+                        data: [0, 18, 35, 52],
+                        backgroundColor: ['#e7e5e4', '#60a5fa', '#f87171', '#fb923c'],
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { 
+                            beginAtZero: true, 
+                            max: 60,
+                            title: { display: true, text: 'Wzrost w skali %' }
+                        }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+
+        function updateProtocol(type) {
+            const content = document.getElementById('protocol-content');
+            const detail = document.getElementById('protocol-detail');
+            const protocols = {
+                focus: { 
+                    title: "Skupienie i Stan Alertu", 
+                    text: "Mózg musi być pobudzony, aby oznaczyć konkretne synapsy do zmiany. Adrenalina i acetylocholina działają jak marker 'edytuj to'.", 
+                    tool: "Narzędzie: Fiksacja wzrokowa na jednym punkcie przez 30-60 sekund przed nauką.", 
+                    color: "border-blue-400" 
+                },
+                errors: { 
+                    title: "Sygnał Błędu i Frustracja", 
+                    text: "Błędy są sygnałem dla układu nerwowego, że dotychczasowe schematy nie działają. Frustracja otwiera chemiczne okno plastyczności.", 
+                    tool: "Narzędzie: Wykonuj zadania, w których popełniasz ok. 15% błędów. Nie rezygnuj, gdy poczujesz frustrację.", 
+                    color: "border-red-400" 
+                },
+                rest: { 
+                    title: "Odpoczynek i Konsolidacja", 
+                    text: "Właściwa zmiana fizyczna (wzrost synaps) zachodzi wyłącznie podczas głębokiego snu lub stanów bezruchu.", 
+                    tool: "Narzędzie: 10-minutowa sesja NSDR (Non-Sleep Deep Rest) zaraz po intensywnym bloku nauki.", 
+                    color: "border-indigo-400" 
+                }
+            };
+            const data = protocols[type];
+            detail.className = `p-8 bg-stone-50 rounded-2xl border-l-8 ${data.color} transition-all duration-300`;
+            content.innerHTML = `
+                <h3 class="text-xl font-bold mb-3 text-stone-800">${data.title}</h3>
+                <p class="text-stone-600 mb-4">${data.text}</p>
+                <div class="bg-white p-4 rounded-lg border border-stone-200">
+                    <p class="text-sm font-bold text-stone-800">${data.tool}</p>
+                </div>`;
+        }
+
+        window.onload = () => {
+            setDates();
+            initBioChart();
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analiza Adaptogenów: Ashwagandha vs Bacopa</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Chosen Palette: Zrównoważona Natura (Ciepłe beże, kojąca zieleń szałwiowa, profesjonalny antracyt) -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        
+        :root {
+            --bg-main: #fcfaf7;
+            --accent-green: #6b8e6b;
+            --text-dark: #2d3436;
+            --card-bg: #ffffff;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-dark);
+            scroll-behavior: smooth;
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 650px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+
+        .tab-active {
+            border-bottom: 3px solid var(--accent-green);
+            color: var(--accent-green);
+            font-weight: 600;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(107, 142, 107, 0.1);
+        }
+
+        .guru-node {
+            transition: all 0.3s ease;
+        }
+
+        .guru-node:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+<a href="index.html" style="position:fixed;top:14px;left:14px;z-index:9999;font:600 0.85rem/1 -apple-system,BlinkMacSystemFont,sans-serif;color:#2F6B4F;background:#fff;border:1px solid #E3E6E0;border-radius:999px;padding:8px 14px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.08);">← Index</a>
+
+    <!-- Application Structure Plan:
+        1. Dashboard Hero: Szybki przegląd różnic między Ashwagandhą a Bacopą.
+        2. Neuro-Biochemia: Interaktywny wykres porównujący mechanizmy działania (GABA, acetylocholina).
+        3. Cele Terapeutyczne: Matryca wyboru "Co dla kogo?" oparta na badaniach PubMed.
+        4. Panele Ekspertów: Dynamiczne karty z protokołami Hubermana, Patrick i Attii.
+        5. Labirynt Społeczności: Analiza ryzyk z Reddit (anhedonia, tarczyca).
+        6. Przewodnik Zakupowy: Tabela dostawców w Polsce z uwzględnieniem standaryzacji (KSM-66, BaCognize).
+    -->
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 glass-card shadow-sm">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
+            <span class="font-bold text-xl text-green-800">Adaptogen<span class="text-green-600">Lab</span></span>
+            <div class="hidden md:flex space-x-6 text-sm font-medium">
+                <a href="#biology" class="hover:text-green-700 transition">Biochemia</a>
+                <a href="#clinical" class="hover:text-green-700 transition">Klinika</a>
+                <a href="#experts" class="hover:text-green-700 transition">Eksperci</a>
+                <a href="#market" class="hover:text-green-700 transition">Rynek PL</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="pt-24 pb-12 px-4 max-w-6xl mx-auto">
+        
+        <!-- Hero Section -->
+        <section class="mb-16 text-center">
+            <h1 class="text-4xl md:text-5xl font-extrabold mb-4 text-gray-800">Ashwagandha vs Bacopa Monnieri</h1>
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto mb-8">
+                Kompleksowe porównanie dwóch fundamentów medycyny ajurwedyjskiej w świetle nowoczesnej neurobiologii i medycyny opartej na dowodach (EBM).
+            </p>
+            <div class="flex justify-center space-x-4">
+                <button onclick="switchContext('ashwagandha')" id="btn-ash" class="px-6 py-2 rounded-full bg-green-100 text-green-800 font-bold border border-green-200 transition-all hover:bg-green-200">Ashwagandha</button>
+                <button onclick="switchContext('bacopa')" id="btn-bac" class="px-6 py-2 rounded-full bg-blue-100 text-blue-800 font-bold border border-blue-200 transition-all hover:bg-blue-200">Bacopa Monnieri</button>
+            </div>
+        </section>
+
+        <!-- Intro Content -->
+        <section class="grid md:grid-cols-2 gap-8 mb-16">
+            <div id="main-description" class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+                <h2 id="desc-title" class="text-2xl font-bold mb-4">Ashwagandha (Withania somnifera)</h2>
+                <p id="desc-text" class="text-gray-700 leading-relaxed">
+                    Znana jako "siła ogiera", Ashwagandha jest królową adaptogenów ukierunkowanych na oś stresu HPA. Jej głównym zadaniem jest modulacja poziomu kortyzolu i wsparcie układu odpornościowego. Idealna dla osób żyjących w ciągłym napięciu psychofizycznym.
+                </p>
+                <ul id="desc-bullets" class="mt-4 space-y-2 text-sm text-gray-600">
+                    <li>• Obniża kortyzol nawet o 30%</li>
+                    <li>• Wspiera funkcję tarczycy (T4)</li>
+                    <li>• Poprawia jakość snu poprzez ścieżkę GABA</li>
+                </ul>
+            </div>
+            <div class="chart-container glass-card p-4 rounded-2xl shadow-sm">
+                <canvas id="comparisonChart"></canvas>
+            </div>
+        </section>
+
+        <!-- Clinical Goals -->
+        <section id="clinical" class="mb-16">
+            <div class="text-center mb-10">
+                <h2 class="text-3xl font-bold mb-2">Zastosowania Kliniczne</h2>
+                <p class="text-gray-500 italic">Na podstawie metaanaliz PubMed (2018-2024)</p>
+            </div>
+            <div class="grid md:grid-cols-3 gap-6">
+                <!-- Card 1 -->
+                <div class="bg-white p-6 rounded-xl border-t-4 border-green-500 shadow-sm">
+                    <h3 class="font-bold text-lg mb-2">Redukcja Stresu</h3>
+                    <p class="text-sm text-gray-600 mb-4">Badania KSM-66 wykazały drastyczny spadek punktacji w skali PSS (Perceived Stress Scale).</p>
+                    <div class="bg-gray-100 h-2 rounded-full">
+                        <div class="bg-green-500 h-2 rounded-full" style="width: 95%"></div>
+                    </div>
+                    <span class="text-xs text-gray-400 mt-1 block">Skuteczność: Bardzo wysoka</span>
+                </div>
+                <!-- Card 2 -->
+                <div class="bg-white p-6 rounded-xl border-t-4 border-blue-500 shadow-sm">
+                    <h3 class="font-bold text-lg mb-2">Retencja Pamięci</h3>
+                    <p class="text-sm text-gray-600 mb-4">Bacopa (Bacosides) stymuluje wzrost dendrytów i poprawia szybkość przetwarzania informacji.</p>
+                    <div class="bg-gray-100 h-2 rounded-full">
+                        <div class="bg-blue-500 h-2 rounded-full" style="width: 85%"></div>
+                    </div>
+                    <span class="text-xs text-gray-400 mt-1 block">Skuteczność: Wysoka (wymaga czasu)</span>
+                </div>
+                <!-- Card 3 -->
+                <div class="bg-white p-6 rounded-xl border-t-4 border-yellow-500 shadow-sm">
+                    <h3 class="font-bold text-lg mb-2">Sport i Regeneracja</h3>
+                    <p class="text-sm text-gray-600 mb-4">Ashwagandha podnosi VO2 max oraz wspiera syntezę testosteronu u mężczyzn.</p>
+                    <div class="bg-gray-100 h-2 rounded-full">
+                        <div class="bg-yellow-500 h-2 rounded-full" style="width: 75%"></div>
+                    </div>
+                    <span class="text-xs text-gray-400 mt-1 block">Skuteczność: Średnia/Wysoka</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Experts Section -->
+        <section id="experts" class="mb-16 bg-gray-50 -mx-4 px-4 py-12 rounded-3xl">
+            <h2 class="text-3xl font-bold text-center mb-10">Protokoły Eksperckie (Guru Analysis)</h2>
+            <div class="grid md:grid-cols-3 gap-8 text-center">
+                <div class="guru-node p-6 bg-white rounded-2xl shadow-sm">
+                    <div class="w-20 h-20 bg-gray-200 rounded-full mx-auto mb-4 flex items-center justify-center font-bold text-gray-400">AH</div>
+                    <h3 class="font-bold text-xl">Andrew Huberman</h3>
+                    <p class="text-sm text-gray-500 mb-4">Neurobiolog ze Stanford</p>
+                    <p class="text-sm text-gray-700 italic">"Ashwagandha tylko w okresach wysokiego stresu (cykle 2 tyg. ON / 2 tyg. OFF). Bacopa dla długofalowego wsparcia pamięci, min. 300mg rano."</p>
+                </div>
+                <div class="guru-node p-6 bg-white rounded-2xl shadow-sm border-2 border-green-100">
+                    <div class="w-20 h-20 bg-gray-200 rounded-full mx-auto mb-4 flex items-center justify-center font-bold text-gray-400">RP</div>
+                    <h3 class="font-bold text-xl">Rhonda Patrick</h3>
+                    <p class="text-sm text-gray-500 mb-4">Ekspertka ds. długowieczności</p>
+                    <p class="text-sm text-gray-700 italic">"Skupiona na sulforafanie i wit. D, ale uznaje Bacopę za skuteczny środek nootropowy, który zwiększa neuroplastyczność przez BDNF."</p>
+                </div>
+                <div class="guru-node p-6 bg-white rounded-2xl shadow-sm">
+                    <div class="w-20 h-20 bg-gray-200 rounded-full mx-auto mb-4 flex items-center justify-center font-bold text-gray-400">PA</div>
+                    <h3 class="font-bold text-xl">Peter Attia</h3>
+                    <p class="text-sm text-gray-500 mb-4">Specjalista prewencji</p>
+                    <p class="text-sm text-gray-700 italic">"Używa Ashwagandhy rzadziej, głównie dla pacjentów z wysokim kortyzolem wieczornym utrudniającym sen. Stawia na czystość farmaceutyczną."</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Reddit Insights -->
+        <section class="mb-16">
+            <div class="flex items-center mb-6">
+                <div class="w-10 h-10 bg-orange-500 rounded-lg flex items-center justify-center text-white font-bold mr-4">r/</div>
+                <h2 class="text-2xl font-bold">Głos Społeczności: Reddit Biohackers</h2>
+            </div>
+            <div class="bg-orange-50 p-6 rounded-2xl border border-orange-100">
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <h4 class="font-bold text-orange-800 mb-2">Ryzyko Anhedonii (Ashwagandha)</h4>
+                        <p class="text-sm text-gray-700">Wielu użytkowników zgłasza "emocjonalne stępienie" (blunting) po długim stosowaniu KSM-66. Mechanizm prawdopodobnie wiąże się z nadmiernym obniżeniem kortyzolu i wpływem na serotoninę. **Zalecenie:** Robić przerwy.</p>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-orange-800 mb-2">Problemy Trawienne (Bacopa)</h4>
+                        <p class="text-sm text-gray-700">Bacopa jest znana z wywoływania nudności i skurczów żołądka, jeśli jest przyjmowana na czczo. **Zalecenie:** Zawsze z posiłkiem zawierającym tłuszcz (bacozydy są lipofilne).</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Market Guide -->
+        <section id="market" class="mb-16">
+            <h2 class="text-3xl font-bold text-center mb-10">Dostawcy i Produkty w Polsce</h2>
+            <div class="overflow-x-auto bg-white rounded-2xl shadow-sm border border-gray-100">
+                <table class="w-full text-left">
+                    <thead class="bg-gray-50 border-b">
+                        <tr>
+                            <th class="px-6 py-4 font-bold text-gray-700">Marka / Producent</th>
+                            <th class="px-6 py-4 font-bold text-gray-700">Produkt / Standaryzacja</th>
+                            <th class="px-6 py-4 font-bold text-gray-700">Przeznaczenie</th>
+                            <th class="px-6 py-4 font-bold text-gray-700">Czystość</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                        <tr>
+                            <td class="px-6 py-4">Aliness (MedicaLine)</td>
+                            <td class="px-6 py-4">Ashwagandha KSM-66 (5% witanolidów)</td>
+                            <td class="px-6 py-4">Stres, regeneracja sportowa</td>
+                            <td class="px-6 py-4"><span class="bg-green-100 text-green-700 text-xs px-2 py-1 rounded">Wysoka (Ekstrakt)</span></td>
+                        </tr>
+                        <tr>
+                            <td class="px-6 py-4">OstroVit</td>
+                            <td class="px-6 py-4">Bacopa Monnieri Extract (50% bakozydów)</td>
+                            <td class="px-6 py-4">Pamięć, skupienie</td>
+                            <td class="px-6 py-4"><span class="bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded">Ekonomiczna</span></td>
+                        </tr>
+                        <tr>
+                            <td class="px-6 py-4">Apollo's Hegemony</td>
+                            <td class="px-6 py-4">Bacopa BaCognize®</td>
+                            <td class="px-6 py-4">Kognicja, sen</td>
+                            <td class="px-6 py-4"><span class="bg-purple-100 text-purple-700 text-xs px-2 py-1 rounded">Premium</span></td>
+                        </tr>
+                        <tr>
+                            <td class="px-6 py-4">Swanson</td>
+                            <td class="px-6 py-4">Full Spectrum Ashwagandha</td>
+                            <td class="px-6 py-4">Ogólne wsparcie</td>
+                            <td class="px-6 py-4"><span class="bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded">Średnia (Sproszkowany korzeń)</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-white border-t py-8 text-center text-sm text-gray-500">
+        <p>© 2024 Raport Adaptogenny. Materiał wyłącznie informacyjny.</p>
+        <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    </footer>
+
+    <script>
+        let myChart;
+        const data = {
+            ashwagandha: {
+                title: "Ashwagandha (Withania somnifera)",
+                text: "Znana jako 'siła ogiera', Ashwagandha jest królową adaptogenów ukierunkowanych na oś stresu HPA. Jej głównym zadaniem jest modulacja poziomu kortyzolu i wsparcie układu odpornościowego. Idealna dla osób żyjących w ciągłym napięciu psychofizycznym.",
+                bullets: ["• Obniża kortyzol nawet o 30%", "• Wspiera funkcję tarczycy (T4)", "• Poprawia jakość snu poprzez ścieżkę GABA"],
+                chartData: [95, 70, 60, 85, 40]
+            },
+            bacopa: {
+                title: "Bacopa Monnieri (Brahmi)",
+                text: "Nazywana 'ziołem pamięci', Bacopa Monnieri koncentruje się na regeneracji neuronów i wzmacnianiu komunikacji synaptycznej. Działa poprzez zwiększenie poziomu acetylocholiny i ochronę hipokampa przed stresem oksydacyjnym.",
+                bullets: ["• Poprawia retencję pamięci długotrwałej", "• Zwiększa szybkość przetwarzania informacji", "• Działa anksjolitycznie (przeciwlękowo)"],
+                chartData: [60, 95, 90, 50, 70]
+            }
+        };
+
+        function switchContext(type) {
+            const content = data[type];
+            document.getElementById('desc-title').innerText = content.title;
+            document.getElementById('desc-text').innerText = content.text;
+            const bullets = document.getElementById('desc-bullets');
+            bullets.innerHTML = content.bullets.map(b => `<li>${b}</li>`).join('');
+
+            // UI feedback
+            document.getElementById('btn-ash').classList.toggle('ring-2', type === 'ashwagandha');
+            document.getElementById('btn-ash').classList.toggle('ring-green-400', type === 'ashwagandha');
+            document.getElementById('btn-bac').classList.toggle('ring-2', type === 'bacopa');
+            document.getElementById('btn-bac').classList.toggle('ring-blue-400', type === 'bacopa');
+
+            updateChart(content.chartData, type);
+        }
+
+        function initChart() {
+            const ctx = document.getElementById('comparisonChart').getContext('2d');
+            myChart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['Redukcja Stresu', 'Pamięć/Kognicja', 'Neuroprotekcja', 'Sen', 'Siła Fizyczna'],
+                    datasets: [{
+                        label: 'Profil Adaptogenu',
+                        data: data.ashwagandha.chartData,
+                        fill: true,
+                        backgroundColor: 'rgba(107, 142, 107, 0.2)',
+                        borderColor: 'rgb(107, 142, 107)',
+                        pointBackgroundColor: 'rgb(107, 142, 107)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgb(107, 142, 107)'
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    elements: {
+                        line: { borderWidth: 3 }
+                    },
+                    scales: {
+                        r: {
+                            angleLines: { display: true },
+                            suggestedMin: 0,
+                            suggestedMax: 100,
+                            ticks: { display: false }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+        }
+
+        function updateChart(newData, type) {
+            const color = type === 'ashwagandha' ? 'rgba(107, 142, 107, 0.2)' : 'rgba(59, 130, 246, 0.2)';
+            const borderColor = type === 'ashwagandha' ? 'rgb(107, 142, 107)' : 'rgb(59, 130, 246)';
+            
+            myChart.data.datasets[0].data = newData;
+            myChart.data.datasets[0].backgroundColor = color;
+            myChart.data.datasets[0].borderColor = borderColor;
+            myChart.update();
+        }
+
+        window.onload = initChart;
+    </script>
+</body>
+</html>

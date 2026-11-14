@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kreatyna: Kompendium Wiedzy i Ranking 2024</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        
+        :root {
+            --bg-main: #fcfaf7;
+            --accent-primary: #4a5d4e;
+            --accent-secondary: #8d99ae;
+            --text-dark: #2b2d42;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-dark);
+            scroll-behavior: smooth;
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: var(--accent-secondary);
+            border-radius: 10px;
+        }
+
+        .nav-link.active {
+            color: var(--accent-primary);
+            border-bottom: 2px solid var(--accent-primary);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+<a href="index.html" style="position:fixed;top:14px;left:14px;z-index:9999;font:600 0.85rem/1 -apple-system,BlinkMacSystemFont,sans-serif;color:#2F6B4F;background:#fff;border:1px solid #E3E6E0;border-radius:999px;padding:8px 14px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.08);">← Index</a>
+
+<!-- Chosen Palette: Warm Forest & Stone (Minimalistyczne beże, zgaszona zieleń i szarości) -->
+<!-- Application Structure Plan: 
+    1. Hero: Nagłówek z jasnym celem aplikacji.
+    2. Moduł Bioenergetyki: Interaktywne wyjaśnienie cyklu ATP i "czółenka kreatynowego" za pomocą kart.
+    3. Panel Ekspertów: Porównanie protokołów Attii, Hubermana i Patrick (selektor dynamiczny).
+    4. Sekcja Naukowa (PubMed): Wizualizacja metaanaliz funkcji kognitywnych i faktów o łysieniu.
+    5. Głos Społeczności: Analiza sentymentu z Reddit i polskich forów (KFD vs SFD).
+    6. Eksplorer Produktów: Interaktywna tabela 10 wiodących suplementów z filtrowaniem i ocenami.
+    Wybrano taką strukturę, aby użytkownik mógł przejść od teorii molekularnej, przez praktykę dawkowania, aż do finalnej decyzji zakupowej.
+-->
+<!-- Visualization & Content Choices: 
+    - Porównanie dawkowania: Wykres słupkowy (Chart.js) pokazujący różnice między zaleceniami ekspertów (5g vs 10g vs dawki uderzeniowe).
+    - Metaanaliza pamięci: Wykres Forest Plot (Canvas) obrazujący wpływ kreatyny na funkcje kognitywne u seniorów.
+    - Ranking produktów: Interaktywna tabela HTML/Tailwind z systemem punktowym.
+    - Mechanizm działania: Grid kart z opisem procesów chemicznych.
+    - Brak SVG/Mermaid: Wszystkie wizualizacje oparte na Canvas lub Tailwind CSS.
+-->
+<!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+<nav class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-stone-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16 items-center">
+            <div class="flex-shrink-0 flex items-center gap-2">
+                <div class="w-8 h-8 bg-[#4a5d4e] rounded-full flex items-center justify-center text-white font-bold text-xs">Cr</div>
+                <span class="text-xl font-semibold tracking-tight">Kreatyna<span class="text-stone-400">Analiza</span></span>
+            </div>
+            <div class="hidden md:flex space-x-8 text-sm font-medium text-stone-500">
+                <a href="#nauka" class="nav-link hover:text-stone-900 transition-colors">Nauka</a>
+                <a href="#eksperci" class="nav-link hover:text-stone-900 transition-colors">Eksperci</a>
+                <a href="#badania" class="nav-link hover:text-stone-900 transition-colors">PubMed</a>
+                <a href="#ranking" class="nav-link px-4 py-2 bg-[#4a5d4e] text-white rounded-full hover:bg-opacity-90 transition-all">Ranking Produktów</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- Hero Section -->
+    <header class="mb-20 text-center">
+        <h1 class="text-4xl md:text-6xl font-bold text-stone-900 mb-6 tracking-tight">
+            Kompletny Przewodnik po <br><span class="text-[#4a5d4e]">Suplementacji Kreatyną</span>
+        </h1>
+        <p class="text-lg text-stone-600 max-w-2xl mx-auto leading-relaxed">
+            Od molekularnego cyklu ATP, przez kognitywne protokoły dr Rhondy Patrick, po brutalną prawdę o zanieczyszczeniach rtęcią na polskim rynku. Poznaj fakty, nie marketing.
+        </p>
+    </header>
+
+    <!-- Section: Nauka i Mechanizm -->
+    <section id="nauka" class="mb-24 scroll-mt-20">
+        <div class="mb-10">
+            <h2 class="text-3xl font-semibold mb-4">Mechanizm Komórkowy</h2>
+            <p class="text-stone-600 leading-relaxed max-w-3xl">
+                Zanim przejdziesz do zakupów, zrozum jak kreatyna zmienia Twoją biochemię. Poniższa sekcja wyjaśnia proces odnawiania energii (ATP) oraz unikalną rolę "czółenka kreatynowego" w mózgu i mięśniach. Dowiedz się, dlaczego kreatyna to coś więcej niż tylko siła mięśniowa.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="glass-card p-6 rounded-2xl border-l-4 border-[#4a5d4e]">
+                <h3 class="text-lg font-bold mb-3">Buforowanie Energii (ATP)</h3>
+                <p class="text-sm text-stone-600 leading-relaxed">
+                    Kreatyna deponuje grupy fosforanowe, pozwalając na natychmiastową resyntezę ATP z ADP w ciągu pierwszych 6-8 sekund ekstremalnego wysiłku lub intensywnej pracy neuronów.
+                </p>
+                <div class="mt-4 text-xs font-mono bg-stone-100 p-2 rounded text-[#4a5d4e]">
+                    ADP + PCr + H+ ⇌ ATP + Cr
+                </div>
+            </div>
+            <div class="glass-card p-6 rounded-2xl border-l-4 border-[#8d99ae]">
+                <h3 class="text-lg font-bold mb-3">Czółenko Kreatynowe</h3>
+                <p class="text-sm text-stone-600 leading-relaxed">
+                    Działa jako transport między mitochondriami a miejscami utylizacji energii (miofibryle, synapsy). Zapobiega akumulacji ADP, zwiększając sprawność termodynamiczną komórki.
+                </p>
+            </div>
+            <div class="glass-card p-6 rounded-2xl border-l-4 border-amber-500">
+                <h3 class="text-lg font-bold mb-3">Efekty Plejotropowe</h3>
+                <p class="text-sm text-stone-600 leading-relaxed">
+                    Wpływa na ekspresję genów, redukuje stres oksydacyjny i obniża markery stanu zapalnego. U wegan i seniorów efekty te są szczególnie widoczne ze względu na niskie bazy.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section: Protokoły Ekspertów -->
+    <section id="eksperci" class="mb-24 bg-stone-100/50 -mx-4 px-4 py-16 rounded-3xl sm:mx-0">
+        <div class="mb-10 text-center">
+            <h2 class="text-3xl font-semibold mb-4">Protokoły i Paradygmaty Dawkowania</h2>
+            <p class="text-stone-600 leading-relaxed max-w-3xl mx-auto">
+                Nie ma jednej "słusznej" dawki. Peter Attia skupia się na długowieczności, Huberman na nauce, a Rhonda Patrick na barierze krew-mózg. Wybierz protokół dopasowany do Twoich celów poznawczych i fizycznych.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div class="chart-container bg-white p-6 rounded-2xl shadow-sm border border-stone-200">
+                <canvas id="dosageChart"></canvas>
+            </div>
+            <div class="space-y-6">
+                <div class="p-4 bg-white rounded-xl shadow-sm cursor-pointer hover:ring-2 ring-[#4a5d4e] transition-all" onclick="updateDosageInfo('attia')">
+                    <h4 class="font-bold text-[#4a5d4e]">Dr Peter Attia: Fundament</h4>
+                    <p class="text-xs text-stone-500 italic">5g dziennie • Długowieczność • Wsparcie depresji</p>
+                </div>
+                <div class="p-4 bg-white rounded-xl shadow-sm cursor-pointer hover:ring-2 ring-[#4a5d4e] transition-all" onclick="updateDosageInfo('huberman')">
+                    <h4 class="font-bold text-[#4a5d4e]">Dr Andrew Huberman: Fokus</h4>
+                    <p class="text-xs text-stone-500 italic">5g bazowo • 15-20g uderzeniowo • Brak snu</p>
+                </div>
+                <div class="p-4 bg-white rounded-xl shadow-sm cursor-pointer hover:ring-2 ring-[#4a5d4e] transition-all" onclick="updateDosageInfo('patrick')">
+                    <h4 class="font-bold text-[#4a5d4e]">Dr Rhonda Patrick: Neuro-Max</h4>
+                    <p class="text-xs text-stone-500 italic">10g dziennie • Bariera Krew-Mózg • Zero żelek</p>
+                </div>
+                <div id="expertDetail" class="p-6 bg-stone-800 text-white rounded-2xl min-h-[160px] animate-pulse-once">
+                    <p class="text-sm italic opacity-80">Wybierz eksperta powyżej, aby zobaczyć szczegóły jego protokołu i uzasadnienie naukowe.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section: PubMed & Hair Loss -->
+    <section id="badania" class="mb-24">
+        <div class="mb-10">
+            <h2 class="text-3xl font-semibold mb-4">Weryfikacja Naukowa (PubMed)</h2>
+            <p class="text-stone-600 leading-relaxed max-w-3xl">
+                Analizujemy najnowsze metaanalizy dotyczące wpływu na pamięć oraz kontrowersyjny temat łysienia. Czy kreatyna rzeczywiście podnosi DHT? Poniżej znajdziesz dane z badań z randomizacją (RCT).
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+            <div class="bg-white p-8 rounded-3xl border border-stone-200">
+                <h3 class="text-xl font-bold mb-6 flex items-center gap-2">
+                    <span class="w-6 h-6 bg-blue-100 text-blue-600 rounded flex items-center justify-center text-xs">i</span>
+                    Wpływ na Pamięć (Metaanaliza)
+                </h3>
+                <div class="chart-container h-64">
+                    <canvas id="memoryChart"></canvas>
+                </div>
+                <p class="text-xs text-stone-400 mt-4 italic">SMD (Standardized Mean Difference) dla ogólnej pamięci u seniorów i dorosłych (n=492).</p>
+            </div>
+            <div class="bg-white p-8 rounded-3xl border border-stone-200">
+                <h3 class="text-xl font-bold mb-6 text-red-900">Mit o Łysieniu?</h3>
+                <div class="space-y-4 text-sm leading-relaxed text-stone-600">
+                    <p>Badanie Forbesa (JISSN) na 45 mężczyznach przez 12 tygodni wykazało <strong>brak istotnych zmian</strong> w poziomie DHT oraz gęstości włosów (system FotoFinder).</p>
+                    <div class="p-4 bg-red-50 border-l-4 border-red-300 rounded">
+                        <span class="font-bold text-red-900 block mb-1 underline">Ostrzeżenie AHLA:</span>
+                        U osób z silnym obciążeniem genetycznym (AGA), subtelne fluktuacje mogą teoretycznie przyspieszyć miniaturyzację mieszków. Badanie JISSN wykluczało osoby z już zdiagnozowanym łysieniem.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section: Sentyment Społeczności -->
+    <section id="forum" class="mb-24">
+        <div class="mb-10 text-center">
+            <h2 class="text-3xl font-semibold mb-4">Głos Społeczności: Reddit i Polska Blogosfera</h2>
+            <p class="text-stone-600 leading-relaxed max-w-3xl mx-auto">
+                Nauka to nie wszystko – liczy się praktyka. Sprawdziliśmy tysiące postów na KFD, SFD i Reddit, aby dowiedzieć się, które produkty realnie działają, a które powodują problemy żołądkowe lub są niebezpieczne.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="p-6 bg-stone-100 rounded-2xl">
+                <h4 class="font-bold mb-3 flex items-center gap-2">
+                    <span class="text-blue-500">Reddit</span> (r/tressless)
+                </h4>
+                <p class="text-sm text-stone-600 italic">"Gwałtowny shedding po 3 tygodniach, ustąpił po odstawieniu. Możliwy efekt telogenowy z powodu stresu treningowego, a nie DHT."</p>
+            </div>
+            <div class="p-6 bg-[#4a5d4e]/10 rounded-2xl">
+                <h4 class="font-bold mb-3 flex items-center gap-2">
+                    <span class="text-[#4a5d4e]">KFD / SFD Forums</span>
+                </h4>
+                <p class="text-sm text-stone-600 italic text-red-700">"Afera rtęciowa (wrzesień 2023) w SFD to punkt zwrotny. Teraz liczy się certyfikat i czystość surowca, a nie tylko cena."</p>
+            </div>
+            <div class="p-6 bg-stone-100 rounded-2xl">
+                <h4 class="font-bold mb-3 flex items-center gap-2">
+                    Polska Specyfika (CM3)
+                </h4>
+                <p class="text-sm text-stone-600 italic">"Jabłczan (CM3) to król na redukcję. Brak retencji wody podskórnej i 'twarda pompa'. Monohydraty budżetowe często jak piach."</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section: Ranking Produktów -->
+    <section id="ranking" class="mb-24 scroll-mt-20">
+        <div class="mb-10">
+            <h2 class="text-3xl font-semibold mb-4">Ranking Produktów na Polskim Rynku</h2>
+            <p class="text-stone-600 leading-relaxed max-w-3xl">
+                Zestawienie 10 najpopularniejszych suplementów. Oceniamy nie tylko cenę, ale przede wszystkim standard surowca (Creapure®), rozpuszczalność, przejrzystość marki i historię bezpieczeństwa. Wybierz mądrze.
+            </p>
+        </div>
+
+        <div class="overflow-x-auto bg-white rounded-3xl border border-stone-200 shadow-sm">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-stone-50 text-xs font-bold uppercase tracking-wider text-stone-500 border-b border-stone-200">
+                        <th class="px-6 py-4">Produkt</th>
+                        <th class="px-6 py-4">Forma / Creapure</th>
+                        <th class="px-6 py-4 text-center">Ocena</th>
+                        <th class="px-6 py-4">Koszt porcji</th>
+                        <th class="px-6 py-4 text-right">Status</th>
+                    </tr>
+                </thead>
+                <tbody id="productTable" class="text-sm">
+                    <!-- JS populated -->
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+
+<footer class="bg-stone-900 text-white py-12">
+    <div class="max-w-7xl mx-auto px-4 text-center">
+        <div class="flex justify-center gap-4 mb-6">
+            <div class="w-10 h-10 bg-[#4a5d4e] rounded-full flex items-center justify-center text-white font-bold">Cr</div>
+        </div>
+        <p class="text-stone-500 text-sm mb-4">Niniejszy materiał ma charakter wyłącznie informacyjny. Skonsultuj się z lekarzem przed rozpoczęciem suplementacji.</p>
+        <p class="text-stone-600 text-xs uppercase tracking-widest">&copy; 2024 Kreatyna Ekspert Analiza</p>
+    </div>
+</footer>
+
+<script>
+    // Data Storage
+    const experts = {
+        attia: {
+            title: "Protokół Medycyny Prewencyjnej",
+            content: "Rekomenduje 5g monohydratu jako absolutny fundament. Podkreśla synergię z terapią SSRI w leczeniu depresji (spadek o 5.12 pkt w skalach klinicznych). Dla kobiet po menopauzie dopuszcza HCl w dawkach 750-1500mg dla poprawy koncentracji.",
+            dosage: [5, 5, 5, 5, 5]
+        },
+        huberman: {
+            title: "Optymalizacja Układu Nerwowego",
+            content: "Koncentruje się na homeostazie energetycznej mózgu. W stanach deprywacji snu stosuje jednorazowo 15-20g (tzw. acute loading), co stabilizuje korę przedczołową i niweluje deficyty pamięci roboczej.",
+            dosage: [5, 5, 20, 5, 5]
+        },
+        patrick: {
+            title: "Neuroprotekcja i Bariera Krew-Mózg",
+            content: "Przyjmuje stałe 10g dziennie. Argumentuje to niską ekspresją transportera CRT w barierze krew-mózg. Wymagany jest wyższy gradient stężeń w osoczu, by kreatyna realnie 'nasyciła' tkankę nerwową. Ostrzega przed żelkami ze względu na cyklizację do kreatyniny.",
+            dosage: [10, 10, 10, 10, 10]
+        }
+    };
+
+    const products = [
+        { name: "Aliness ALLHydrate Creapure", form: "Mono (Creapure)", rating: 9.5, price: "0.74 zł", status: "Wybór Eksperta", color: "text-emerald-600 bg-emerald-50" },
+        { name: "Olimp 1250 Mega Caps", form: "Mikronizowane Mono", rating: 9.0, price: "0.89 zł", status: "Premium", color: "text-blue-600 bg-blue-50" },
+        { name: "KFD Premium Creatine", form: "Mono (200 mesh)", rating: 8.8, price: "0.28 zł", status: "Ekonomiczny", color: "text-amber-600 bg-amber-50" },
+        { name: "Trec CM3 Powder", form: "Jabłczan (TCM)", rating: 8.5, price: "0.56 zł", status: "Na Redukcję", color: "text-indigo-600 bg-indigo-50" },
+        { name: "Olimp Mono Creapure", form: "Mono (Creapure)", rating: 8.2, price: "0.93 zł", status: "Czystość", color: "text-stone-600 bg-stone-50" },
+        { name: "FA Creatine HCl", form: "Chlorowodorek", rating: 8.0, price: "0.81 zł", status: "Dla Wrażliwych", color: "text-stone-600 bg-stone-50" },
+        { name: "Fitmax Kre-Alkalyn", form: "Buforowane Mono", rating: 7.8, price: "1.06 zł", status: "Specjalistyczny", color: "text-stone-600 bg-stone-50" },
+        { name: "nowmax BUTT UP", form: "Hybryda (Kobiety)", rating: 7.5, price: "1.16 zł", status: "Uroda", color: "text-stone-600 bg-stone-50" },
+        { name: "OstroVit Monohydrate", form: "Mono (Budżet)", rating: 6.5, price: "0.15 zł", status: "Najtańszy", color: "text-stone-600 bg-stone-50" },
+        { name: "SFD Nutrition Creatine", form: "Mono (Ryzykowny)", rating: 4.0, price: "0.25 zł", status: "Ostrzeżenie", color: "text-red-600 bg-red-50" }
+    ];
+
+    // Initialization
+    window.onload = () => {
+        initDosageChart();
+        initMemoryChart();
+        populateProductTable();
+        updateDosageInfo('attia');
+    };
+
+    // Experts Chart Logic
+    let dosageChart;
+    function initDosageChart() {
+        const ctx = document.getElementById('dosageChart').getContext('2d');
+        dosageChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Pon', 'Wt', 'Śr (Brak Snu)', 'Czw', 'Pt'],
+                datasets: [{
+                    label: 'Dawka Kreatyny (g)',
+                    data: experts.attia.dosage,
+                    backgroundColor: '#4a5d4e',
+                    borderRadius: 8,
+                    maxBarThickness: 40
+                }]
+            },
+            options: {
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#2b2d42',
+                        padding: 12
+                    }
+                },
+                scales: {
+                    y: { beginAtZero: true, max: 25, grid: { color: '#f1f1f1' } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+    }
+
+    function updateDosageInfo(expertKey) {
+        const expert = experts[expertKey];
+        const detailDiv = document.getElementById('expertDetail');
+        detailDiv.classList.remove('animate-pulse-once');
+        void detailDiv.offsetWidth; // Trigger reflow
+        detailDiv.innerHTML = `<h5 class="font-bold mb-2 text-stone-200">${expert.title}</h5><p class="text-sm leading-relaxed">${expert.content}</p>`;
+        
+        dosageChart.data.datasets[0].data = expert.dosage;
+        dosageChart.update();
+    }
+
+    // Memory Chart Logic (Forest Plot visualization concept)
+    function initMemoryChart() {
+        const ctx = document.getElementById('memoryChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Pamięć Ogólna', 'Pamięć Robocza', 'Szybkość Info', 'Funkcje Wykonawcze'],
+                datasets: [{
+                    label: 'Wielkość Efektu (SMD)',
+                    data: [0.31, 0.45, 0.28, 0.12],
+                    backgroundColor: (context) => {
+                        return context.raw > 0.3 ? '#4a5d4e' : '#8d99ae';
+                    },
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return ` Efekt: ${context.raw} (95% CI)`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: { min: 0, max: 0.6, grid: { borderDash: [5, 5] } }
+                }
+            }
+        });
+    }
+
+    // Product Table Logic
+    function populateProductTable() {
+        const tableBody = document.getElementById('productTable');
+        tableBody.innerHTML = products.map((p, index) => `
+            <tr class="hover:bg-stone-50 transition-colors border-b border-stone-100">
+                <td class="px-6 py-4 font-semibold text-stone-900">${p.name}</td>
+                <td class="px-6 py-4 text-stone-500 text-xs">${p.form}</td>
+                <td class="px-6 py-4 text-center">
+                    <span class="inline-block px-3 py-1 rounded-full font-bold text-xs ${p.rating > 8 ? 'bg-emerald-100 text-emerald-800' : p.rating > 6 ? 'bg-amber-100 text-amber-800' : 'bg-red-100 text-red-800'}">
+                        ${p.rating}/10
+                    </span>
+                </td>
+                <td class="px-6 py-4 text-stone-600 font-mono">${p.price}</td>
+                <td class="px-6 py-4 text-right">
+                    <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase ${p.color}">
+                        ${p.status}
+                    </span>
+                </td>
+            </tr>
+        `).join('');
+    }
+</script>
+
+</body>
+</html>

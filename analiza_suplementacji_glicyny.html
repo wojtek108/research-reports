@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glicyna: Zdrowie, Sen i Długowieczność (Raport 2024)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Chosen Palette: Warm Scientific (Neutrale, szałwiowa zieleń, ciepły piasek) -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #fdfbf7; color: #334155; }
+        .chart-container { 
+            position: relative; 
+            width: 100%; 
+            max-width: 600px; 
+            margin-left: auto; 
+            margin-right: auto; 
+            height: 300px; 
+            max-height: 400px; 
+        }
+        .card { background: white; border-radius: 12px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05); transition: transform 0.2s; }
+        .tab-active { border-bottom: 3px solid #64748b; color: #1e293b; font-weight: 600; }
+        .expert-card { border-left: 4px solid #94a3b8; }
+    </style>
+</head>
+<body class="antialiased">
+
+<a href="index.html" style="position:fixed;top:14px;left:14px;z-index:9999;font:600 0.85rem/1 -apple-system,BlinkMacSystemFont,sans-serif;color:#2F6B4F;background:#fff;border:1px solid #E3E6E0;border-radius:999px;padding:8px 14px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.08);">← Index</a>
+
+    <!-- Application Structure Plan:
+         1. Hero & Summary: Wprowadzenie do problematyki deficytu glicyny z datą publikacji.
+         2. Dashboard Mechanizmów: Interaktywne przełączanie między Sercem, Mózgiem, Metabolizmem.
+         3. Panel Ekspertów: Porównanie podejść Attia, Huberman, Patrick w formie kart.
+         4. Kalkulator & Protokoły: Narzędzie do obliczania dawek GlyNAC i tabela celów.
+         5. Analiza Form i Rynku: Wizualizacja zawartości glicyny w suplementach i polecane marki.
+    -->
+
+    <!-- Visualization & Content Choices:
+         - Bar Chart: Porównanie syntezy endogennej vs zapotrzebowanie (Zrozumienie deficytu).
+         - Pie Chart: Skład Bisglicynianu Magnezu (Edukacja o proporcjach chelatów).
+         - Interactive Protocol Selector: Dynamiczne aktualizowanie opisu dawkowania.
+         - GlyNAC Calculator: Skrypt JS przeliczający dawkę na kg masy ciała.
+         - Brand Grid: Przegląd rynku z filtrowaniem jakości.
+         - CONFIRMATION: NO SVG graphics used. NO Mermaid JS used.
+    -->
+
+    <nav class="bg-white border-b sticky top-0 z-50 px-4 py-3">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-4">
+                <span class="text-xl font-bold text-slate-800 tracking-tight">Glicyna<span class="text-slate-400">Insight</span></span>
+                <span class="hidden md:block text-[10px] bg-slate-100 text-slate-500 px-2 py-1 rounded-full font-semibold uppercase tracking-wider">Raport: Sierpień 2024</span>
+            </div>
+            <div class="space-x-4 text-sm font-medium">
+                <a href="#biochemia" class="hover:text-slate-500">Biochemia</a>
+                <a href="#eksperci" class="hover:text-slate-500">Eksperci</a>
+                <a href="#dawkowanie" class="hover:text-slate-500">Dawkowanie</a>
+                <a href="#rynek" class="hover:text-slate-500">Rynek</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-6xl mx-auto px-4 py-8">
+        
+        <!-- Sekcja 1: Biochemia i Deficyt -->
+        <section id="biochemia" class="mb-16">
+            <div class="bg-slate-800 text-white p-8 rounded-2xl mb-8 relative overflow-hidden">
+                <div class="absolute top-4 right-4 text-[10px] text-slate-500 font-mono">DATA ANALIZY: 2024.08.04</div>
+                <h1 class="text-3xl font-bold mb-4">Glicyna: Ukryty Deficyt Metaboliczny</h1>
+                <p class="text-slate-300 max-w-3xl leading-relaxed mb-6">
+                    Glicyna przestała być traktowana jako prosty, nieistotny aminokwas. Nowoczesna nauka klasyfikuje ją jako <strong>aminokwas warunkowo niezbędny</strong>. Podczas gdy nasz organizm produkuje około 3g dziennie, zapotrzebowanie na kolagen, glutation i procesy detoksykacji sięga 15g. Ten "głód metaboliczny" pogłębia się wraz z wiekiem.
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-slate-700/50 p-4 rounded-xl border border-slate-600">
+                        <span class="block text-2xl font-bold text-green-400">3g</span>
+                        <span class="text-xs uppercase tracking-wider text-slate-400">Synteza Własna</span>
+                    </div>
+                    <div class="bg-slate-700/50 p-4 rounded-xl border border-slate-600">
+                        <span class="block text-2xl font-bold text-blue-400">10-15g</span>
+                        <span class="text-xs uppercase tracking-wider text-slate-400">Popyt Dobowy</span>
+                    </div>
+                    <div class="bg-slate-700/50 p-4 rounded-xl border border-slate-600">
+                        <span class="block text-2xl font-bold text-orange-400">8-12g</span>
+                        <span class="text-xs uppercase tracking-wider text-slate-400">Typowy Deficyt</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                <div class="chart-container">
+                    <canvas id="gapChart"></canvas>
+                </div>
+                <div>
+                    <h2 class="text-2xl font-bold mb-4">Dlaczego to jest kluczowe?</h2>
+                    <p class="mb-4">Deficyt glicyny ogranicza zdolność organizmu do odnawiania kolagenu (33% jego składu to glicyna) oraz produkcji glutationu – najsilniejszego wewnętrznego antyoksydantu.</p>
+                    <ul class="space-y-3">
+                        <li class="flex items-start gap-3">
+                            <span class="mt-1 flex-shrink-0 w-5 h-5 bg-slate-200 rounded-full flex items-center justify-center text-xs font-bold">1</span>
+                            <span><strong>Termoregulacja:</strong> Obniża temperaturę ciała, ułatwiając wejście w głęboki sen (NREM).</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="mt-1 flex-shrink-0 w-5 h-5 bg-slate-200 rounded-full flex items-center justify-center text-xs font-bold">2</span>
+                            <span><strong>Buforowanie Metylacji:</strong> Chroni wątrobę przy dietach bogatych w mięso (metioninę).</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="mt-1 flex-shrink-0 w-5 h-5 bg-slate-200 rounded-full flex items-center justify-center text-xs font-bold">3</span>
+                            <span><strong>Neurotransmisja:</strong> Działa wyciszająco w rdzeniu kręgowym i pobudzająco (kognitywnie) w korze.</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sekcja 2: Eksperci -->
+        <section id="eksperci" class="mb-16 scroll-mt-20">
+            <div class="text-center mb-10">
+                <h2 class="text-3xl font-bold mb-2">Perspektywy Ekspertów</h2>
+                <p class="text-slate-500">Jak czołowi badacze implementują glicynę w swoich protokołach?</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Attia -->
+                <div class="card expert-card p-6 border-l-blue-500">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">PA</div>
+                        <h3 class="font-bold text-lg leading-tight">Peter Attia</h3>
+                    </div>
+                    <p class="text-sm text-slate-600 mb-4 italic">"Stosuję glicynę jako element stacku nasennego oraz bufor metylacyjny przy NMN."</p>
+                    <ul class="text-xs space-y-2 mb-4">
+                        <li class="bg-blue-50 p-2 rounded"><strong>Cel:</strong> Jakość snu & Długowieczność</li>
+                        <li class="bg-blue-50 p-2 rounded"><strong>Dawka:</strong> 2g wieczorem</li>
+                        <li class="bg-blue-50 p-2 rounded"><strong>Kombinacja:</strong> Mg, Ashwagandha</li>
+                    </ul>
+                </div>
+
+                <!-- Huberman -->
+                <div class="card expert-card p-6 border-l-purple-500">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center text-purple-600 font-bold">AH</div>
+                        <h3 class="font-bold text-lg leading-tight">Andrew Huberman</h3>
+                    </div>
+                    <p class="text-sm text-slate-600 mb-4 italic">"Kluczowa dla spadku temperatury ciała. Wspiera też detoksykację wątroby."</p>
+                    <ul class="text-xs space-y-2 mb-4">
+                        <li class="bg-purple-50 p-2 rounded"><strong>Cel:</strong> Architektura snu & Dopamina</li>
+                        <li class="bg-purple-50 p-2 rounded"><strong>Dawka:</strong> 3g - 5g przed snem</li>
+                        <li class="bg-purple-50 p-2 rounded"><strong>Uwaga:</strong> Hamuje napady ochoty na cukier</li>
+                    </ul>
+                </div>
+
+                <!-- Patrick -->
+                <div class="card expert-card p-6 border-l-rose-500">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-12 h-12 bg-rose-100 rounded-full flex items-center justify-center text-rose-600 font-bold">RP</div>
+                        <h3 class="font-bold text-lg leading-tight">Rhonda Patrick</h3>
+                    </div>
+                    <p class="text-sm text-slate-600 mb-4 italic">"Skupiam się na GlyNAC jako sposobie na odwrócenie markerów starzenia."</p>
+                    <ul class="text-xs space-y-2 mb-4">
+                        <li class="bg-rose-50 p-2 rounded"><strong>Cel:</strong> Mitochondrialny GSH</li>
+                        <li class="bg-rose-50 p-2 rounded"><strong>Protokół:</strong> GlyNAC (Glicyna + NAC)</li>
+                        <li class="bg-rose-50 p-2 rounded"><strong>Opinia:</strong> Wywary z kości są niestabilnym źródłem</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sekcja 3: Interaktywny Panel Dawkowania -->
+        <section id="dawkowanie" class="mb-16 scroll-mt-20">
+            <div class="bg-white rounded-2xl p-8 shadow-sm border border-slate-100">
+                <h2 class="text-2xl font-bold mb-6">Dobierz Swój Protokół</h2>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                    <!-- Kalkulator GlyNAC -->
+                    <div class="bg-slate-50 p-6 rounded-xl">
+                        <h3 class="font-bold mb-4 flex items-center gap-2">
+                            <span>Kalkulator Protokółu GlyNAC</span>
+                            <span class="text-[10px] bg-slate-200 px-2 py-0.5 rounded uppercase tracking-tighter">Longevity</span>
+                        </h3>
+                        <p class="text-sm text-slate-500 mb-6">Podaj swoją masę ciała, aby wyliczyć dawkę zgodną z badaniami klinicznymi (100mg/kg).</p>
+                        
+                        <div class="mb-6">
+                            <label class="block text-sm font-medium mb-2">Twoja waga (kg):</label>
+                            <input type="number" id="weightInput" value="70" class="w-full p-3 rounded-lg border focus:ring-2 focus:ring-slate-400 outline-none transition-all">
+                        </div>
+
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center p-3 bg-white rounded-lg shadow-sm">
+                                <span class="text-sm">Dawka Glicyny:</span>
+                                <span id="glyDose" class="font-bold text-slate-700 underline decoration-slate-300">7.0 g / dobę</span>
+                            </div>
+                            <div class="flex justify-between items-center p-3 bg-white rounded-lg shadow-sm">
+                                <span class="text-sm">Dawka NAC:</span>
+                                <span id="nacDose" class="font-bold text-slate-700 underline decoration-slate-300">7.0 g / dobę</span>
+                            </div>
+                        </div>
+                        <p class="text-[11px] text-slate-400 mt-4 leading-tight">* Dawka podzielona zazwyczaj na 2 porcje z posiłkami. Skonsultuj się z lekarzem przed rozpoczęciem.</p>
+                    </div>
+
+                    <!-- Selector Celów -->
+                    <div>
+                        <h3 class="font-bold mb-4">Inne Scenariusze</h3>
+                        <div class="space-y-2">
+                            <button onclick="updateGoal(0)" class="w-full text-left p-4 rounded-lg border hover:bg-slate-50 transition-colors flex justify-between items-center group">
+                                <span>Głęboki Sen & Zasypianie</span>
+                                <span class="text-slate-300 group-hover:text-slate-500">➔</span>
+                            </button>
+                            <button onclick="updateGoal(1)" class="w-full text-left p-4 rounded-lg border hover:bg-slate-50 transition-colors flex justify-between items-center group">
+                                <span>Stawy & Kolagen</span>
+                                <span class="text-slate-300 group-hover:text-slate-500">➔</span>
+                            </button>
+                            <button onclick="updateGoal(2)" class="w-full text-left p-4 rounded-lg border hover:bg-slate-50 transition-colors flex justify-between items-center group">
+                                <span>Detoks & Bufor SAMe</span>
+                                <span class="text-slate-300 group-hover:text-slate-500">➔</span>
+                            </button>
+                        </div>
+                        
+                        <div id="goalDisplay" class="mt-6 p-4 bg-yellow-50 border border-yellow-100 rounded-lg hidden">
+                            <h4 id="goalTitle" class="font-bold text-yellow-800 text-sm mb-1"></h4>
+                            <p id="goalBody" class="text-sm text-yellow-700"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sekcja 4: Chemia i Rynek -->
+        <section id="rynek" class="mb-16 scroll-mt-20">
+            <h2 class="text-3xl font-bold mb-8 text-center">Analiza Formy i Jakosci</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center mb-16">
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Mit "Bisglicynianu Magnezu"</h3>
+                    <p class="text-sm mb-4">Wiele osób sądzi, że suplementując magnez, dostarcza dość glicyny. Prawda biochemiczna jest inna:</p>
+                    <div class="chart-container">
+                        <canvas id="bisChart"></canvas>
+                    </div>
+                    <p class="text-xs text-slate-500 mt-4 leading-relaxed">
+                        W czystym bisglicynianie magnezu, na 100mg magnezu przypada ok. 609mg glicyny. Aby uzyskać dawkę terapeutyczną 3g glicyny, musiałbyś przyjąć blisko 500mg magnezu elementarnego, co dla wielu osób skończy się efektem przeczyszczającym. <strong>Rozwiązanie:</strong> Łącz magnez z czystą L-glicyną w proszku.
+                    </p>
+                </div>
+                
+                <div class="space-y-4">
+                    <h3 class="text-xl font-bold mb-4">Przewodnik Zakupowy</h3>
+                    <div class="card p-4 flex gap-4 items-center">
+                        <div class="bg-slate-100 w-12 h-12 rounded flex items-center justify-center font-bold">N</div>
+                        <div>
+                            <h4 class="font-bold text-sm text-slate-800">NOW Foods / OstroVit</h4>
+                            <p class="text-xs text-slate-500 italic">Najlepszy stosunek cena/jakość dla czystego proszku.</p>
+                        </div>
+                    </div>
+                    <div class="card p-4 flex gap-4 items-center">
+                        <div class="bg-slate-100 w-12 h-12 rounded flex items-center justify-center font-bold">T</div>
+                        <div>
+                            <h4 class="font-bold text-sm text-slate-800">Thorne / Life Extension</h4>
+                            <p class="text-xs text-slate-500 italic">Czystość farmaceutyczna, brak zbędnych wypełniaczy.</p>
+                        </div>
+                    </div>
+                    <div class="card p-4 flex gap-4 items-center">
+                        <div class="bg-slate-100 w-12 h-12 rounded flex items-center justify-center font-bold">B</div>
+                        <div>
+                            <h4 class="font-bold text-sm text-slate-800">Biogena</h4>
+                            <p class="text-xs text-slate-500 italic">Dla osób szukających certyfikowanego bisglicynianu "Pure".</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabela Porównawcza Form -->
+            <div class="overflow-hidden rounded-xl border border-slate-200">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-slate-50 border-b border-slate-200">
+                        <tr>
+                            <th class="p-4 text-xs font-bold uppercase text-slate-500">Postać</th>
+                            <th class="p-4 text-xs font-bold uppercase text-slate-500">Glicyna %</th>
+                            <th class="p-4 text-xs font-bold uppercase text-slate-500">Zaleta</th>
+                            <th class="p-4 text-xs font-bold uppercase text-slate-500">Uwagi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-sm divide-y divide-slate-100 bg-white">
+                        <tr>
+                            <td class="p-4 font-bold text-slate-700">L-Glicyna Proszek</td>
+                            <td class="p-4 text-green-600">100%</td>
+                            <td class="p-4">Cena i precyzja</td>
+                            <td class="p-4">Lekko słodki smak</td>
+                        </tr>
+                        <tr>
+                            <td class="p-4 font-bold text-slate-700">Kolagen Hydrolizat</td>
+                            <td class="p-4 text-slate-600">~33%</td>
+                            <td class="p-4">Regeneracja tkanek</td>
+                            <td class="p-4">Dostarcza też prolinę</td>
+                        </tr>
+                        <tr>
+                            <td class="p-4 font-bold text-slate-700">Mg Bisglicynian</td>
+                            <td class="p-4 text-orange-600">~86%*</td>
+                            <td class="p-4">Wysoka wchłanialność Mg</td>
+                            <td class="p-4">*Uważaj na "buforowane" tlenkiem</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-slate-900 text-slate-500 py-12 px-4 text-center border-t border-slate-800">
+        <div class="max-w-4xl mx-auto">
+            <p class="text-sm mb-4">Aplikacja oparta na analizie biochemicznej i protokołach eksperckich.</p>
+            <p class="text-xs font-semibold text-slate-400 mb-6">Ostatnia aktualizacja danych: 4 sierpnia 2024 r.</p>
+            <p class="text-[10px] leading-relaxed opacity-50 uppercase tracking-widest">
+                Informacje mają charakter edukacyjny. Suplementacja powinna być konsultowana z lekarzem.
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Chart.js Configuration
+        const ctxGap = document.getElementById('gapChart').getContext('2d');
+        new Chart(ctxGap, {
+            type: 'bar',
+            data: {
+                labels: ['Synteza (3g)', 'Popyt (15g)', 'Deficyt (12g)'],
+                datasets: [{
+                    label: 'Gramy na dobę',
+                    data: [3, 15, 12],
+                    backgroundColor: ['#4ade80', '#60a5fa', '#fb923c'],
+                    borderRadius: 8
+                }]
+            },
+            options: {
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: { 
+                    y: { beginAtZero: true, grid: { display: false } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        const ctxBis = document.getElementById('bisChart').getContext('2d');
+        new Chart(ctxBis, {
+            type: 'doughnut',
+            data: {
+                labels: ['Glicyna (85.9%)', 'Magnez (14.1%)'],
+                datasets: [{
+                    data: [85.9, 14.1],
+                    backgroundColor: ['#94a3b8', '#334155'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                maintainAspectRatio: false,
+                cutout: '70%',
+                plugins: {
+                    legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } }
+                }
+            }
+        });
+
+        // GlyNAC Calculator Logic
+        const weightInput = document.getElementById('weightInput');
+        const glyDoseDisp = document.getElementById('glyDose');
+        const nacDoseDisp = document.getElementById('nacDose');
+
+        weightInput.addEventListener('input', () => {
+            const w = parseFloat(weightInput.value) || 0;
+            const dose = (w * 100 / 1000).toFixed(1);
+            glyDoseDisp.innerText = `${dose} g / dobę`;
+            nacDoseDisp.innerText = `${dose} g / dobę`;
+        });
+
+        // Goal Selector Logic
+        const goals = [
+            { title: "Protokół na Sen", body: "3.0g - 5.0g czystej glicyny na 30-60 min przed snem. Przyspiesza spadek ciepłoty ciała i stabilizuje fazę NREM." },
+            { title: "Wsparcie Stawów", body: "10g - 15g glicyny lub 20g kolagenu przed treningiem lub z posiłkiem. Kluczowe dla odbudowy chrząstek." },
+            { title: "Detoks i Metylacja", body: "2.0g - 3.0g z posiłkiem bogatym w mięso lub rano. Wspiera fazę II detoksykacji wątrobowej i buforuje nadmiar SAMe." }
+        ];
+
+        function updateGoal(idx) {
+            const disp = document.getElementById('goalDisplay');
+            const title = document.getElementById('goalTitle');
+            const body = document.getElementById('goalBody');
+            
+            disp.classList.remove('hidden');
+            title.innerText = goals[idx].title;
+            body.innerText = goals[idx].body;
+        }
+    </script>
+</body>
+</html>
