@@ -8,23 +8,27 @@ Static, dependency-free HTML site collection (mostly Gemini deep-research report
 
 ## Structure
 
-- `index.html` — home page. Simple categorized list of all reports.
+- `index.html` — home page. Simple categorized list of all reports, with a text filter box (JS `filterList()` hides non-matching items and empty categories).
+- `404.html` — GitHub Pages uses it automatically for missing pages.
 - All other `*.html` files are standalone, self-contained pages at the repo root (no subdirectories, no external asset files).
 
 ## Adding a new site — checklist
 
 1. Create the page as a **single self-contained HTML file** at the repo root. Inline all CSS/JS. No frameworks, no build tools, no external local assets.
 2. **File name:** lowercase, Polish text transliterated (`ł→l`, `ś→s`, etc.), words joined with underscores (see existing files, e.g. `centrum_optymalizacji_neuroplastyczno_ci.html`).
-3. **Add a "← Index" pill link** right after `<body>`. Match the pill to the page theme (light pages use the standard light pill; dark pages use the dark variant). Example (light):
+3. **Light mode by default.** Pages must render light regardless of the visitor's OS setting — never add `prefers-color-scheme: dark` auto-switching. A manual dark toggle (opt-in) is fine.
+4. **Head tags:** every page must have, right after the charset meta: the shared inline SVG favicon (`data:image/svg+xml` green circle with "R" — copy from an existing page), plus `og:title` (matches `<title>`), `og:description` (matches the index entry description), `og:type=website`.
+5. **No AI-generation scaffolding comments** — do not include `Chosen Palette`, `Application Structure Plan`, `Visualization & Content Choices`, or `CONFIRMATION: NO SVG...` comment blocks (they were stripped from all existing pages; don't reintroduce them).
+6. **Add a "← Index" pill link** right after `<body>`. Match the pill to the page theme (light pages use the standard light pill; dark pages use the dark variant). Example (light):
    ```html
    <a href="index.html" style="position:fixed;top:14px;left:14px;z-index:9999;font:600 0.85rem/1 -apple-system,BlinkMacSystemFont,sans-serif;color:#2F6B4F;background:#fff;border:1px solid #E3E6E0;border-radius:999px;padding:8px 14px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.08);">← Index</a>
    ```
-4. **Dates:** the file creation date is treated as the report's official date. Hard-code it into the page if the page displays a date — never use `new Date()` for a report date (visitors would see "today" instead of the real date).
-5. **Update `index.html`:**
+7. **Dates:** the file creation date is treated as the report's official date. Hard-code it into the page if the page displays a date — never use `new Date()` for a report date (visitors would see "today" instead of the real date).
+8. **Update `index.html`:**
    - Add the entry under the correct category heading (create a new `<h2>` category only if nothing fits).
    - Entry format: bold title + date badge (`· DD.MM.YYYY`, file creation date) + one-line muted description.
    - Current categories: **Suplementacja i długowieczność**, **Mózg i poznanie**, **Programowanie / ML**.
-6. Commit and push to `main`. Pages rebuilds automatically (~1 min).
+9. Commit and push to `main`. Pages rebuilds automatically (~1 min).
 
 ## Conventions
 
